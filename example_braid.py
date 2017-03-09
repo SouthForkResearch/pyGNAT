@@ -5,7 +5,6 @@
 import ogr
 from shapely.geometry import MultiPolygon, MultiLineString
 from shapely.ops import polygonize
-from shapely.wkt import loads
 import shapes as shp
 
 # variables
@@ -15,30 +14,19 @@ outBraidIntersectShp = r"C:\JL\Testing\pyGNAT\NetworkFeatures\Out\lineIntersectB
 
 # open shapefile
 print "Opening shapefile..."
-driver = ogr.GetDriverByName("ESRI Shapefile")
-srcShp = driver.Open(inShp, 0)
-srcLayer = srcShp.GetLayer()
-spatialRef = srcLayer.GetSpatialRef()
-
-# select only NHD stream feature and connector types, no canals
-strmList = []
-srcLayer.SetAttributeFilter("FType = '460' OR FType = '558'")
-for f in range(0, srcLayer.GetFeatureCount()):
-    strmFeat = srcLayer.GetFeature(f)
-    wktFeat = loads(strmFeat.geometry().ExportToWkt())
-    strmList.append(wktFeat)
-shplyStrm = MultiLineString([strm for strm in strmList])
+strmList, strmDriver, strmSpatialRef = shp.ogrWktToShapely(inShp, r"FType = '460' OR FType = '558'")
+shplyStrm = MultiLineString(strmList)
 
 # polygonize multiLineStrings object
-strmPoly = MultiPolygon(list(polygonize(shplyStrm)))
+strmPoly= MultiPolygon(list(polygonize(shplyStrm)))
 
 # find multiLineStrings that intersect braid polygons
 intersect = shplyStrm.intersection(strmPoly)
 
 # write shapely objects to shapefiles
 outBraidPoly = shp.Shapefile()
-outBraidPoly.shapelyToFeatures(strmPoly, outBraidPolyShp, spatialRef, ogr.wkbMultiPolygon)
+outBraidPoly.shapelyToFeatures(strmPoly, outBraidPolyShp, strmSpatialRef, ogr.wkbMultiPolygon)
 outBraidIntersect = shp.Shapefile()
-outBraidIntersect.shapelyToFeatures(intersect, outBraidIntersectShp, spatialRef, ogr.wkbMultiLineString)
+outBraidIntersect.shapelyToFeatures(intersect, outBraidIntersectShp, strmSpatialRef, ogr.wkbMultiLineString)
 
 print "Process complete!"

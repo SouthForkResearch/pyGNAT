@@ -11,6 +11,7 @@ import os
 import ogr
 import json
 from shapely.geometry import *
+from shapely.wkt import loads
 
 ogr.UseExceptions()
 
@@ -89,3 +90,26 @@ class Shapefile:
         self.layer.CreateFeature(outFeature)
 
         return outFeature
+
+def ogrWktToShapely(inShp, sql=''):
+    shapely_objects = []
+    feat_attrb = []
+    srcDriver = ogr.GetDriverByName("ESRI Shapefile")
+    srcShp = ogr.Open(inShp, 0)
+    srcLyr = srcShp.GetLayer()
+    spatialRef = srcLyr.GetSpatialRef()
+    srcLyrDefn = srcLyr.GetLayerDefn()
+    if sql != '':
+        srcLyr.SetAttributeFilter(sql)
+    # iterate over features, get geometry
+    for feat in range(0, srcLyr.GetFeatureCount()):
+        feature = srcLyr.GetFeature(feat)
+        wktFeat = loads(feature.geometry().ExportToWkt())
+        shapely_objects.append(wktFeat)
+        # iterate through fields, get feature names
+        for field in range(0, srcLyrDefn.GetFieldCount()):
+            fieldDefn = srcLyrDefn.GetFieldDefn(field)
+            fieldName = fieldDefn.GetName()
+            feat_attrb.append(fieldName)
+
+    return shapely_objects, srcDriver, spatialRef
