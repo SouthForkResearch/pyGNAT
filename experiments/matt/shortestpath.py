@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from shapely.geometry import *
 from sys import exit
 
-
+# Start and end nodes
 STARTID = 2492
 ENDID =253 #3850
 
