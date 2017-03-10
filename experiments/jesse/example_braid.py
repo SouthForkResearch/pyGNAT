@@ -5,7 +5,7 @@
 import ogr
 from shapely.geometry import MultiPolygon, MultiLineString
 from shapely.ops import polygonize
-import shapes as shp
+import experiments.shapes as shp
 
 # variables
 inShp = r"C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_Braids.shp"
