@@ -1,8 +1,9 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from shapely.geometry import *
+from sys import exit
 
-
+# Start and end nodes
 STARTID = 2492
 ENDID =253 #3850
 
@@ -44,9 +45,12 @@ end = findnodewithID(ENDID)
 
 
 # Make a depth-first tree from the first headwater we find
-shortestpath = nx.shortest_path(GG, source=start[0], target=end[0])
-path_edges = zip(shortestpath, shortestpath[1:])
-
+try:
+    shortestpath = nx.shortest_path(GG, source=start[0], target=end[0])
+    path_edges = zip(shortestpath, shortestpath[1:])
+except:
+    print "Path found between these two points"
+    exit(0)
 
 
 """
