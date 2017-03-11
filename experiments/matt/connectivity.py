@@ -30,8 +30,6 @@ except:
 
 
 
-
-
 """
     Now let's print some stuff out about this and draw some pretty graphs
 """
@@ -39,8 +37,8 @@ except:
 # This just helps us plot our geo graph. It's kind of ahack
 pos = {v: v for k, v in enumerate(G.nodes())}
 f, (ax) = plt.subplots(1)
-
 ax.set_aspect(1.0)
+plt.axis('off')
 plt.sca(ax)
 
 
