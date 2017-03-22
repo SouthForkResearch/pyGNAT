@@ -5,7 +5,7 @@ from sys import exit
 
 # Load up a simplified shape file and find the outflow from any
 # arbitrary given point
-G = nx.read_shp('../../shapefiles/FullNetwork.shp', simplify=True)
+G = nx.read_shp('C:\dev\pyGNAT\shapefiles\FullNetwork.shp', simplify=False)
 
 def findnodewithID(id):
     """

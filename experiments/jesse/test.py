@@ -1,19 +1,24 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from shapely.geometry import *
+import attributes as a
 
 # testing variables
 inShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_Braids.shp'
-
+outShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\Out\NHD_Braids_attrib.shp'
 # import shapefile as graph
 G = nx.read_shp(inShp, simplify=False)
 
 
-def filterOutCanals(G):
-    # filter out canals (based on NHD FType)
-    return nx.Graph([(u, v, d) for u, v, d in G.edges(data=True) if d['FType'] != 360])
+# attributes.py
 
-SG = filterOutCanals(G)
+# update an existing attribute
+a.update_attribute(G, "GNAT", "Gummy Bear")
+# add a new attribute
+a.add_attribute(G, "NEW_FIELD", "-99999")
+# filter graph by an attribute
+SG = a.select_by_attribute(G, "GNIS_Name", "Lostine River")
+
+nx.write_shp(SG, outShp)
 
 # plot it
 pos = {v: v for k, v in enumerate(G.nodes())}

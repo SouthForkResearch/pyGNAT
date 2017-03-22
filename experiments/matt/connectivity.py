@@ -11,7 +11,7 @@ def randomColour():
 
 # Load a shape file. We simplify to make things WAY faster
 # and because we don't really care about the kinks in each segment
-G = nx.read_shp('../../shapefiles/FullNetwork.shp', simplify=True)
+G = nx.read_shp('C:\dev\pyGNAT\shapefiles\NHD_Disconnected.shp', simplify=False)
 
 # Not sure if this is the right way to go but it gets us here for now.
 GG = G.to_undirected()
