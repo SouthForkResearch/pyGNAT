@@ -12,7 +12,12 @@ def update_attribute(G, attrb_name, attrb_value):
 
 
 def add_attribute(G, attrb_name, attrb_value):
-    nx.set_edge_attributes(G, attrb_name, attrb_value)
+    dict = nx.get_edge_attributes(G, attrb_name)
+    if len(dict) == 0:
+        nx.set_edge_attributes(G, attrb_name, attrb_value)
+    else:
+        print "ERROR: Attribute already exists"
+        exit(0)
     return
 
 
