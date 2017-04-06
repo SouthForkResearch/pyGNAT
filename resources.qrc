@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/GNAT" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

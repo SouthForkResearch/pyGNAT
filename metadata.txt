@@ -1,0 +1,39 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=GNaT
+qgisMinimumVersion=2.0
+description=Build and analyze geomorphic attributes of stream networks
+version=0.1
+author=South Fork Research, Inc.
+email=jesse@southforkresearch.org
+
+about=The Geomorphic Network and Analysis Toolbox (GNAT) is a set of tools used to generate and analyze network and geomorphic attributes for a spatially-explicit stream network dataset, such as NHD or NWI. GNAT was originally developed to support the geomorphic attribute analysis and modeling efforts of the Integrated Status and Effectiveness Monitoring Program (ISEMP) and Columbia Habitat Monitoring Program (CHaMP). However, the tools found within GNAT are flexible enough to be used in a wide variety of data processing and analysis efforts revolving around stream networks.
+
+tracker=https://github.com/SouthForkResearch/pyGNAT/issues
+repository=https://github.com/SouthForkResearch/pyGNAT
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=
+
+homepage=https://github.com/SouthForkResearch/pyGNAT
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
