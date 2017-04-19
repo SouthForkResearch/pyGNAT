@@ -10,14 +10,14 @@ import networkx as nx
 
 class Network():
 
-    def __init__(self, inShp='', directed='true'):
+    def __init__(self, inShp='', graph_type='directed'):
         """Default is to create an directed graph, but an undirected
         graph is required to use some methods."""
         try:
             self.data_source = "inShp"
-            if directed == 'true':
+            if graph_type == 'directed':
                 self.G = nx.read_shp(inShp)
-            else:
+            elif graph_type == 'undirected':
                 temp_G = nx.read_shp(inShp)
                 self.G = temp_G.to_undirected()
         except Exception as e:
@@ -34,6 +34,8 @@ class Network():
             self.list_SG = list(nx.connected_component_subgraphs(self.G))
             return self.list_SG
         except:
+            self.list_SG = []
+            return self.list_SG
             print "ERROR: Could not find subgraphs"
             exit(0)
 
@@ -45,16 +47,16 @@ class Network():
         :return: new graph with network IDs added as attribute
         """
         attrb_field = "NetworkID"
-        try:
-            subgraph_count = 1
-            for SG in self.list_SG:
-                network_id = "{0}{1:0>3}".format("net", subgraph_count)
-                self.G.add_attribute(SG, attrb_field, network_id)
-                subgraph_count += 1
-            union_SG = nx.union_all(self.list_SG)
-            return union_SG
-        except:
-            raise IndexError  # not sure about this... will probably change later
+        #try:
+        subgraph_count = 1
+        for SG in self.list_SG:
+            network_id = "{0}{1:0>3}".format("net", subgraph_count)
+            self.add_attribute(SG, attrb_field, network_id)
+            subgraph_count += 1
+        union_SG = nx.union_all(self.list_SG)
+        return union_SG
+        #except:
+        #    raise IndexError  # not sure about this... will probably change later
 
 
     def get_graph_attributes(self, attrb_name):
@@ -71,45 +73,45 @@ class Network():
         return str_summary
 
 
-    def update_attribute(self, attrb_name, attrb_value):
+    def update_attribute(self, G, attrb_name, attrb_value):
         """
         Update existing attribute with new values
         :param attrb_name: name of the attribute to be updated
         :param attrb_value: new attribute value
         """
-        dict = nx.get_edge_attributes(self.G, attrb_name)
+        dict = nx.get_edge_attributes(G, attrb_name)
         if len(dict) > 0:
-            nx.set_edge_attributes(self.G, attrb_name, attrb_value)
+            nx.set_edge_attributes(G, attrb_name, attrb_value)
         else:
             print "ERROR: Attribute not found"
             exit(0)
         return
 
 
-    def add_attribute(self, attrb_name, attrb_value):
+    def add_attribute(self, G, attrb_name, attrb_value):
         """
         Add a new attribute to a graph.
         :param attrb_name: name of the attribute to be added
         :param attrb_value: new attribute value
         """
-        dict = nx.get_edge_attributes(self.G, attrb_name)
+        dict = nx.get_edge_attributes(G, attrb_name)
         if len(dict) == 0:
-            nx.set_edge_attributes(self.G, attrb_name, attrb_value)
+            nx.set_edge_attributes(G, attrb_name, attrb_value)
         else:
             print "ERROR: Attribute already exists"
             exit(0)
         return
 
 
-    def select_by_attribute(self, attrb_name, attrb_value):
+    def select_by_attribute(self, G, attrb_name, attrb_value):
         """
         Select all edges within a graph based on the user-supplied attribute value
         :param attrb_name: name of the attribute that will be used for the selection
         :param attrb_value: attribute value to select by
         """
-        dict = nx.get_edge_attributes(self.G, attrb_name)
+        dict = nx.get_edge_attributes(G, attrb_name)
         if len(dict) > 0:
-            nx.Graph([(u, v, d) for u, v, d in self.G.edges(data=True) if d[attrb_name] != attrb_value])
+            nx.Graph([(u, v, d) for u, v, d in G.edges(data=True) if d[attrb_name] != attrb_value])
         else:
             print "ERROR: Attribute not found"
             exit(0)
