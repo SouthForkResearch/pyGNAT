@@ -47,29 +47,29 @@ class Network():
         :return: new graph with network IDs added as attribute
         """
         attrb_field = "NetworkID"
-        #try:
-        subgraph_count = 1
-        for SG in self.list_SG:
-            network_id = "{0}{1:0>3}".format("net", subgraph_count)
-            self.add_attribute(SG, attrb_field, network_id)
-            subgraph_count += 1
-        union_SG = nx.union_all(self.list_SG)
-        return union_SG
-        #except:
-        #    raise IndexError  # not sure about this... will probably change later
+        try:
+            subgraph_count = 1
+            for SG in self.list_SG:
+                network_id = "{0}{1:0>3}".format("net", subgraph_count)
+                self.add_attribute(SG, attrb_field, network_id)
+                subgraph_count += 1
+            union_SG = nx.union_all(self.list_SG)
+            return union_SG
+        except:
+           raise IndexError  # not sure about this... will probably change later
 
 
-    def get_graph_attributes(self, attrb_name):
-        str_total_edges = self.G.size()
-        edge_dict = nx.get_edge_attributes(self.G, attrb_name)
+    def get_graph_attributes(self, G, attrb_name):
+        str_total_edges = G.size()
+        edge_dict = nx.get_edge_attributes(G, attrb_name)
         if len(edge_dict) > 0:
             networks = set(val for val in edge_dict.values())
+            for network in networks:
+                str_summary = "Network ID: {0} - Total number of edges: {1}".format(network, str_total_edges)
         else:
-            print "ERROR: Attribute not found"
+            str_summary = ""
+            print "ERROR: Network ID attribute not found"
             exit(0)
-        # format into string for printing
-        for network in networks:
-            str_summary = "Network ID: {0} - Total number of edges: {1}".format(network, str_total_edges)
         return str_summary
 
 
@@ -80,11 +80,15 @@ class Network():
         :param attrb_value: new attribute value
         """
         dict = nx.get_edge_attributes(G, attrb_name)
-        if len(dict) > 0:
-            nx.set_edge_attributes(G, attrb_name, attrb_value)
-        else:
-            print "ERROR: Attribute not found"
-            exit(0)
+        try:
+            if len(dict) > 0:
+                nx.set_edge_attributes(G, attrb_name, attrb_value)
+            else:
+                print "ERROR: Attribute type does not exist in the network"
+                exit(0)
+        except:
+            raise Exception
+            print "ERROR: Missing an input parameter"
         return
 
 
@@ -99,7 +103,6 @@ class Network():
             nx.set_edge_attributes(G, attrb_name, attrb_value)
         else:
             print "ERROR: Attribute already exists"
-            exit(0)
         return
 
 
