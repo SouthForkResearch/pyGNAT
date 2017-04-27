@@ -164,7 +164,7 @@ class NetworkTestCase(unittest.TestCase):
         headwater_G = net.get_headwater_edges(DG, a_name)
         braid_G = net.get_braid_edges(DG, a_name)
         final_G = net.merge_subgraphs(DG, outflow_G, headwater_G, braid_G)
-        nx.write_shp(final_G, outShp)
+        nx.write_shp(final_G, outShp) # temporary for review
         self.assertTrue(final_G is not None)
 
     if __name__ == '__main__':

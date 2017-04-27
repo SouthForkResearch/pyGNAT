@@ -178,12 +178,13 @@ def merge_subgraphs(G, outflow_G, headwater_G, braid_G):
     :return G_compose: final graph output with all reach type attributes included
     """
 
+    # unfortunately this didn't work correctly
     # SG = list_G.pop(0)
     # compose_G = nx.compose(G, SG)
     # if len(list_G) > 0:
     #     merge_subgraphs(compose_G, list_G)
 
-    # this is not ideal, but fancy recursion didn't work
+    # this is not ideal, but the fancy recursion didn't work
     G1 = nx.compose(G, outflow_G)
     G2 = nx.compose(G1, headwater_G)
     compose_G = nx.compose(G2, braid_G)
