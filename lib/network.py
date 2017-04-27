@@ -12,7 +12,7 @@ class Network():
 
     def __init__(self, inShp='', graph_type='directed'):
         """Default is to create an directed graph, but an undirected
-        graph is required to use some methods."""
+        graph is required for some methods."""
         try:
             self.data_source = "inShp"
             if graph_type == 'directed':
