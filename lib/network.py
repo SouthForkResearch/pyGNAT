@@ -3,7 +3,7 @@
 #   Authors:        Jesse Langdon, jesse@southforkresearch.org
 #                   Matt Reimer, matt@northarrowresearch.com
 #   Created:        4/6/2017
-#   Revised:        4/20/2017
+#   Revised:        4/27/2017
 
 
 import networkx as nx
