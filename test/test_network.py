@@ -158,7 +158,7 @@ class NetworkTestCase(unittest.TestCase):
 
     def test_merge_subgraphs_with_braids(self):
         a_name = "ReachType"
-        DG = nx.read_shp(inConnectedShp, simplify=False)
+        DG = nx.read_shp(inFullNetworkShp, simplify=False)
         net.add_attribute(DG, a_name, "connector")
         outflow_G = net.get_outflow_edges(DG, a_name)
         headwater_G = net.get_headwater_edges(DG, a_name)

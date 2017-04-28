@@ -8,7 +8,6 @@
 
 import networkx as nx
 
-
 def get_subgraphs(G):
     """
     Find all subgraphs that are disconnected.
@@ -133,7 +132,7 @@ def get_headwater_edges(G, attrb_field):
         headwater_nodes = list(dict((k, v) for k, v in in_dict.iteritems() if v == 0))
         headwater_edges = G.out_edges(headwater_nodes, data=True)
         headwater_G = nx.DiGraph(headwater_edges)
-        update_attribute(G, attrb_field, "headwater")
+        update_attribute(headwater_G, attrb_field, "headwater")
         return headwater_G
     else:
         print "ERROR: Graph is not directed."
@@ -149,7 +148,6 @@ def get_braid_edges(G, attrb_field):
     """
     if nx.is_directed(G):
         UG = G.to_undirected()
-        print "Number of edges in undirected graph: " + str(UG.number_of_edges())
         braid_G = nx.DiGraph()
         print "Finding cycles in undirected graph..."
         list_cycles = nx.cycle_basis(UG)
