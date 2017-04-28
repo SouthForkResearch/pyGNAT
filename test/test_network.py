@@ -5,7 +5,9 @@ import networkx as nx
 inFullNetworkShp = r'C:\dev\pyGNAT\experiments\shapefiles\FullNetwork_sm.shp'
 inDisconnectedShp = r'C:\dev\pyGNAT\experiments\shapefiles\NHD_Disconnected.shp'
 inConnectedShp = r'C:\dev\pyGNAT\experiments\shapefiles\NHD_Braids.shp'
-outShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\Out\reach_types.shp'
+inBraidSimpleShp = r'C:\dev\pyGNAT\experiments\shapefiles\Braid_simple.shp'
+outShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\Out\output_test.shp'
+
 
 class NetworkTestCase(unittest.TestCase):
     """Tests for 'network.py' functions"""
@@ -137,13 +139,15 @@ class NetworkTestCase(unittest.TestCase):
 
     def test_get_braid_edges_directed_graph(self):
         a_name = "ReachType"
-        DG = nx.read_shp(inConnectedShp, simplify=False)
+        DG = nx.read_shp(inBraidSimpleShp, simplify=False)
+        net.add_attribute(DG, a_name, "connector")
         braid_G = net.get_braid_edges(DG, a_name)
         self.assertTrue(braid_G is not None)
 
     def test_get_braid_edges_undirected_graph(self):
         a_name = "ReachType"
         DG = nx.read_shp(inConnectedShp, simplify=False)
+        net.add_attribute(DG, a_name, "connector")
         UG = DG.to_undirected()
         braid_G = net.get_braid_edges(UG, a_name)
         total_edges = nx.edges(braid_G)
@@ -152,6 +156,7 @@ class NetworkTestCase(unittest.TestCase):
     def test_get_braid_edges_no_braids(self):
         a_name = "ReachType"
         DG = nx.read_shp(inDisconnectedShp, simplify=False)
+        net.add_attribute(DG, a_name, "connector")
         braid_G = net.get_braid_edges(DG, a_name)
         total_edges = nx.edges(braid_G)
         self.assertTrue(len(total_edges) == 0)
@@ -164,7 +169,7 @@ class NetworkTestCase(unittest.TestCase):
         headwater_G = net.get_headwater_edges(DG, a_name)
         braid_G = net.get_braid_edges(DG, a_name)
         final_G = net.merge_subgraphs(DG, outflow_G, headwater_G, braid_G)
-        nx.write_shp(final_G, outShp) # temporary for review
+        nx.write_shp(final_G, outShp)  # temporary for review
         self.assertTrue(final_G is not None)
 
     if __name__ == '__main__':
