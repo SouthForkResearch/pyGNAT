@@ -132,7 +132,7 @@ def get_headwater_edges(G, attrb_field):
         headwater_nodes = list(dict((k, v) for k, v in in_dict.iteritems() if v == 0))
         headwater_edges = G.out_edges(headwater_nodes, data=True)
         headwater_G = nx.DiGraph(headwater_edges)
-        update_attribute(G, attrb_field, "headwater")
+        update_attribute(headwater_G, attrb_field, "headwater")
         return headwater_G
     else:
         print "ERROR: Graph is not directed."
@@ -140,30 +140,32 @@ def get_headwater_edges(G, attrb_field):
         return headwater_G
 
 
-def get_braid_edges(G, attrb_field):
+def get_edge_in_cycle(edge, G):
+    u, v, d = edge
+    list_cycles = nx.cycle_basis(G)
+    cycle_edges = [zip(nodes,(nodes[1:]+nodes[:1])) for nodes in list_cycles]
+    found = False
+    for cycle in cycle_edges:
+        if (u, v) in cycle or (v, u) in cycle:
+            found = True
+    return found
+
+
+def get_braid_edges(DG, a_name):
     """
     Create graph with the braid edges attributed
     :param attrb_field: name of the attribute field
     :return braid_G: graph with new attribute
     """
-    if nx.is_directed(G):
-        UG = G.to_undirected()
-        print "Number of edges in undirected graph: " + str(UG.number_of_edges())
+    if nx.is_directed(DG):
+        UG = DG.to_undirected()
         braid_G = nx.DiGraph()
-        print "Finding cycles in undirected graph..."
-        list_cycles = nx.cycle_basis(UG)
-        if len(list_cycles) == 0:
-            print "ERROR: no braids found!"
-            braid_G = nx.null_graph()
-            return braid_G
-        else:
-            print "Total number of potential braids: " + str(len(list_cycles))
-            for cycles in list_cycles:
-                #cycle_edges = zip(cycles, cycles[1:] + cycles[:1])
-                for u, v, d in G.edges(nbunch=cycles, data=True):
-                    braid_G.add_edge(u, v, d)
-            update_attribute(braid_G, attrb_field, "braid")
-            return braid_G
+        for edge in DG.edges(data=True):
+            is_edge = get_edge_in_cycle(edge, UG)
+            if is_edge == True:
+                braid_G.add_edge(*edge)
+        update_attribute(braid_G, a_name, "braid")
+        return braid_G
     else:
         print "ERROR: Graph is not directed."
         braid_G = nx.null_graph()
