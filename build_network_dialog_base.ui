@@ -42,7 +42,7 @@
     <string>Reset</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineOutput">
+  <widget class="QLineEdit" name="txtOutputFolder">
    <property name="geometry">
     <rect>
      <x>35</x>
@@ -55,7 +55,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A folder or directory which where tool outputs will be written. The outputs include:&lt;/p&gt;&lt;p&gt;- stream network line shapefile, with network IDs added as a new attribute field&lt;/p&gt;&lt;p&gt;- stream network nodes point shapefile, representing nodes within the network&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnInput">
+  <widget class="QPushButton" name="btnBrowseOutput">
    <property name="geometry">
     <rect>
      <x>505</x>
@@ -68,7 +68,7 @@
     <string>...</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineInput">
+  <widget class="QLineEdit" name="txtInputNetwork">
    <property name="geometry">
     <rect>
      <x>35</x>
@@ -81,7 +81,7 @@
     <string>Shapefile representing a stream network which serves as the primary input for the Build Network tool.</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnOutput">
+  <widget class="QPushButton" name="btnBrowseInput">
    <property name="geometry">
     <rect>
      <x>504</x>
@@ -120,7 +120,7 @@
     <enum>Qt::StrongFocus</enum>
    </property>
    <property name="text">
-    <string>Processing output directory:</string>
+    <string>Processing output folder:</string>
    </property>
   </widget>
   <widget class="QLabel" name="lblProcess">
@@ -136,34 +136,7 @@
     <string>Process stream network:</string>
    </property>
   </widget>
-  <widget class="QTextBrowser" name="txtResults">
-   <property name="geometry">
-    <rect>
-     <x>35</x>
-     <y>220</y>
-     <width>511</width>
-     <height>216</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Courier New</family>
-    </font>
-   </property>
-   <property name="cursor" stdset="0">
-    <cursorShape>ArrowCursor</cursorShape>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Panel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Sunken</enum>
-   </property>
-   <property name="lineWidth">
-    <number>1</number>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="lblResultsTxt">
    <property name="geometry">
     <rect>
      <x>35</x>
@@ -176,7 +149,7 @@
     <string>Processing results:</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnExport">
+  <widget class="QPushButton" name="btnExportToTxt">
    <property name="geometry">
     <rect>
      <x>437</x>
@@ -233,6 +206,25 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Instructions&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Clicking &lt;span style=&quot; font-weight:600;&quot;&gt;Display Results&lt;/span&gt; will load the processed stream network into the current QGIS map legend and display area. The user can then manually perform edits to the shapefile to fix incorrectly disconnected sub-networks. Additional help is available in the &lt;a href=&quot;#&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wiki&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="txtResults">
+   <property name="geometry">
+    <rect>
+     <x>36</x>
+     <y>222</y>
+     <width>511</width>
+     <height>217</height>
+    </rect>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOn</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="readOnly">
     <bool>true</bool>
    </property>
   </widget>

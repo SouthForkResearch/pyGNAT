@@ -3,10 +3,30 @@
 #   Authors:        Jesse Langdon, jesse@southforkresearch.org
 #                   Matt Reimer, matt@northarrowresearch.com
 #   Created:        4/6/2017
-#   Revised:        4/27/2017
+#   Revised:        5/5/2017
 
-
+import os.path
 import networkx as nx
+
+
+def import_shp(file_path):
+    if os.path.isfile(file_path) and file_path.endswith(".shp"):
+        DG = nx.read_shp(file_path)
+        return DG
+    else:
+        print "ERROR: Could not convert to netorkx graph, not a shapefile"
+        DG = nx.Graph()
+        return DG
+
+
+def export_shp(G, folder_path):
+    # TODO add check if graph is directed
+    if G is not None:
+        nx.write_shp(G, folder_path)
+    else:
+        print "ERROR: Could not write to shapefile, graph is empty"
+    return
+
 
 def get_subgraphs(G):
     """
