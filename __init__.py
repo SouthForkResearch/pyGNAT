@@ -35,12 +35,12 @@ def classFactory(iface):  # pylint: disable=invalid-name
     return GNAT(iface)
 
 
+
 # To activate remote debugging set DEBUG_PLUGIN=GNATPlugin as a QGIS
 # environment variable in Settings > Options > System > Environment
 import os
 import logging
-import lib.debug as debug
-
+import debug
 DEBUG = False
 
 if 'DEBUG_PLUGIN' in os.environ and os.environ['DEBUG_PLUGIN'] == "GNATPlugin":

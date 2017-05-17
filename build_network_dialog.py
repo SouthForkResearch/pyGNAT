@@ -24,8 +24,8 @@
 import os
 import time
 from PyQt4 import QtGui, uic
-from PyQt4.QtCore import Qt
-import lib.network as network
+from PyQt4.QtCore import QDir
+import network as network
 from qgis.core import *
 from qgis.gui import *
 
@@ -48,8 +48,8 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         self.setupUi(self)
 
         # Map functions to click events
-        self.btnBrowseInput.clicked.connect(lambda: self.file_browser(self.txtInputNetwork))
-        self.btnBrowseOutput.clicked.connect(lambda: self.folder_browser(self.txtOutputFolder))
+        self.btnBrowseInput.clicked.connect(self.file_browser)
+        self.btnBrowseOutput.clicked.connect(self.folder_browser)
         self.btnRun.clicked.connect(self.calc_subnetwork_id)
 
         self.formFields = [self.txtInputNetwork, self.txtOutputFolder, self.txtResults]
@@ -60,22 +60,23 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         self.btnClose.clicked.connect(self.close)
 
 
-    def file_browser(self, txtControl):
+    def file_browser(self):
         """
         Set QT QLineEdit control to user-specified file name.
         :param txtControl: name of the QLineEdit control
         """
-        file_name = QtGui.QFileDialog.getOpenFileName(self, "Open File")
-        txtControl.setText(file_name)
+        file_path = QtGui.QFileDialog.getOpenFileName(self, "Open shapefile", "C:\\JL\\Testing\\PyGNAT\\NetworkFeatures", "Shapefile (*.shp)")
+        self.input_shp = QDir.toNativeSeparators(file_path)
+        self.txtInputNetwork.setText(self.input_shp)
 
 
-    def folder_browser(self, txtControl):
+    def folder_browser(self):
         """
         Set QT QLineEdit control to user-specified folder name.
         :param txtControl: name of the QLineEdit control
         """
-        folder_name = QtGui.QFileDialog.getExistingDirectory(self, "Select Folder")
-        txtControl.setText(folder_name)
+        self.output_folder = QtGui.QFileDialog.getExistingDirectory(self, "Select output folder", "C:\\JL\\Testing\\PyGNAT\\NetworkFeatures", QtGui.QFileDialog.ShowDirsOnly)
+        self.txtOutputFolder.setText(self.output_folder)
 
 
     def reset_form(self):
@@ -88,9 +89,8 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         Display results of processing to QT QTextEdit control for display.
         :param txtControl:
         """
-        logResults = self.txtResults()
-        logResults.moveCursor(QtGui.QTextCursor.End)
-        logResults.setValue(str_results)
+        self.txtResults().moveCursor(QtGui.QTextCursor.End)
+        self.txtResults().insertPlainText(QtCore.QString(str_results))
 
 
     def display_results_lyr(self):
@@ -127,7 +127,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         self.display_log_txt("Processing started: {0}".format(start_string))
 
         self.display_log_txt("Importing stream network shapefile...")
-        DG = network.import_shp(self.txtInputNetwork.text())
+        DG = network.import_shp(self.input_shp)
 
         self.display_log_txt("Finding subnetworks...")
         list_SG = network.get_subgraphs(DG)
@@ -136,7 +136,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         UG = network.calc_network_id(list_SG)
 
         self.display_log_txt("Writing to shapefile...")
-        network.export_shp(UG, self.txtOutputFolder.text())
+        network.export_shp(UG, self.output_folder)
 
         stop_string = time.ctime()
         stop_time = time.time()
