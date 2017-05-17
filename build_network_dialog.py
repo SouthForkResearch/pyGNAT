@@ -66,7 +66,8 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         :param txtControl: name of the QLineEdit control
         """
         file_path = QtGui.QFileDialog.getOpenFileName(self, "Open shapefile", "C:\\JL\\Testing\\PyGNAT\\NetworkFeatures", "Shapefile (*.shp)")
-        self.input_shp = QDir.toNativeSeparators(file_path)
+        win_path = QDir.toNativeSeparators(file_path)
+        self.input_shp = str(win_path)
         self.txtInputNetwork.setText(self.input_shp)
 
 
@@ -89,8 +90,8 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         Display results of processing to QT QTextEdit control for display.
         :param txtControl:
         """
-        self.txtResults().moveCursor(QtGui.QTextCursor.End)
-        self.txtResults().insertPlainText(QtCore.QString(str_results))
+        log_results = self.txtResults
+        log_results.appendPlainText(str_results)
 
 
     def display_results_lyr(self):
@@ -141,10 +142,12 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         stop_string = time.ctime()
         stop_time = time.time()
         total_time = round(((stop_time - start_time)/60), 2)
-        self.display_log_txt("Processing completed: {0} ".format(stop_string))
+        self.display_log_txt("Processing completed: {0}".format(stop_string))
         self.display_log_txt("Total processing time: {0} minutes".format(total_time))
+        self.display_log_txt("--------------------------\n")
 
         # Display results as text and layers in QGIS TOC
-        self.str_results = network.get_graph_attributes(UG, "NetworkID")
-        self.display_log_txt(self.str_results)
+        list_results = network.get_graph_attributes(UG, "NetworkID")
+        for result in list_results:
+            self.display_log_txt(result)
         # TODO self.display_results_lyr

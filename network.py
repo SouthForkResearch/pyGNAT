@@ -34,7 +34,8 @@ def get_subgraphs(G):
     :param self: graph must be undirected to use this method.
     """
     try:
-        list_SG = list(nx.connected_component_subgraphs(G))
+        UG = G.to_undirected()
+        list_SG = list(nx.connected_component_subgraphs(UG))
         return list_SG
     except:
         print "ERROR: Could not find subgraphs"
@@ -62,17 +63,21 @@ def calc_network_id(list_SG):
 
 
 def get_graph_attributes(G, attrb_name):
-    str_total_edges = G.size()
+    total_edges = G.number_of_edges()
     edge_dict = nx.get_edge_attributes(G, attrb_name)
     if len(edge_dict) > 0:
-        networks = set(val for val in edge_dict.values())
+        list_summary=[]
+        list_summary.append("Total number of edges in network: {0}".format(total_edges))
+        networks = sorted(set(val for val in edge_dict.values()))
         for network in networks:
-            str_summary = "Network ID: {0} - Total number of edges: {1}".format(network, str_total_edges)
-        return str_summary
+            select_G = select_by_attribute(G, "NetworkID", network)
+            select_total_edges = select_G.number_of_edges()
+            list_summary.append("Network ID: {0} - Total number of edges: {1}".format(network, select_total_edges))
+        return list_summary
     else:
-        str_summary = ""
+        list_summary = []
         print "ERROR: Network ID attribute not found"
-        return str_summary
+        return list_summary
 
 
 def update_attribute(G, attrb_name, attrb_value):
@@ -114,9 +119,12 @@ def select_by_attribute(G, attrb_name, attrb_value):
     """
     dict = nx.get_edge_attributes(G, attrb_name)
     if len(dict) > 0:
-        nx.Graph([(u, v, d) for u, v, d in G.edges(data=True) if d[attrb_name] != attrb_value])
+        select_G = nx.Graph([(u, v, d) for u, v, d in G.edges(data=True) if d[attrb_name] != attrb_value])
+        return select_G
     else:
         print "ERROR: Attribute not found"
+        select_G = nx.null_graph()
+        return select_G
 
 
 def get_outflow_edges(G, attrb_field):
