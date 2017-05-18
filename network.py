@@ -14,7 +14,7 @@ def import_shp(file_path):
         DG = nx.read_shp(file_path)
         return DG
     else:
-        print "ERROR: Could not convert to netorkx graph, not a shapefile"
+        print "ERROR: Could not convert to networkx graph, not a shapefile"
         DG = nx.Graph()
         return DG
 
@@ -119,7 +119,7 @@ def select_by_attribute(G, attrb_name, attrb_value):
     """
     dict = nx.get_edge_attributes(G, attrb_name)
     if len(dict) > 0:
-        select_G = nx.Graph([(u, v, d) for u, v, d in G.edges(data=True) if d[attrb_name] != attrb_value])
+        select_G = nx.Graph([(u, v, d) for u, v, d in G.edges(data=True) if d[attrb_name] == attrb_value])
         return select_G
     else:
         print "ERROR: Attribute not found"

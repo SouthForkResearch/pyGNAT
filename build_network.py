@@ -61,7 +61,7 @@ class GNAT:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&GNaT')
+        self.menu = self.tr(u'&GNAT')
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'GNAT')
         self.toolbar.setObjectName(u'GNAT')
