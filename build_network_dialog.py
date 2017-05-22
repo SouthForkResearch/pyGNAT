@@ -65,7 +65,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         Set QT QLineEdit control to user-specified file name.
         :param txtControl: name of the QLineEdit control
         """
-        file_path = QtGui.QFileDialog.getOpenFileName(self, "Open shapefile", "C:\\JL\\Testing\\PyGNAT\\NetworkFeatures", "Shapefile (*.shp)")
+        file_path = QtGui.QFileDialog.getOpenFileName(self, "Open shapefile", r"C:\Testing\pyGNAT\data", "Shapefile (*.shp)")
         win_path = QDir.toNativeSeparators(file_path)
         self.input_shp = str(win_path)
         self.txtInputNetwork.setText(self.input_shp)
@@ -76,7 +76,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         Set QT QLineEdit control to user-specified folder name.
         :param txtControl: name of the QLineEdit control
         """
-        self.output_folder = QtGui.QFileDialog.getExistingDirectory(self, "Select output folder", "C:\\JL\\Testing\\PyGNAT\\NetworkFeatures", QtGui.QFileDialog.ShowDirsOnly)
+        self.output_folder = QtGui.QFileDialog.getExistingDirectory(self, "Select output folder", r"C:\Testing\pyGNAT\data", QtGui.QFileDialog.ShowDirsOnly)
         self.txtOutputFolder.setText(self.output_folder)
 
 

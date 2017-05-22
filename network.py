@@ -63,16 +63,21 @@ def calc_network_id(list_SG):
 
 
 def get_graph_attributes(G, attrb_name):
+    if nx.is_directed(G):
+        DG = G
+    else:
+        DG = G.to_directed()
     total_edges = G.number_of_edges()
-    edge_dict = nx.get_edge_attributes(G, attrb_name)
+    edge_dict = nx.get_edge_attributes(DG, attrb_name)
     if len(edge_dict) > 0:
         list_summary=[]
         list_summary.append("Total number of edges in network: {0}".format(total_edges))
         networks = sorted(set(val for val in edge_dict.values()))
         for network in networks:
-            select_G = select_by_attribute(G, "NetworkID", network)
+            select_G = select_by_attribute(DG, "NetworkID", network)
             select_total_edges = select_G.number_of_edges()
             list_summary.append("Network ID: {0} - Total number of edges: {1}".format(network, select_total_edges))
+        del DG
         return list_summary
     else:
         list_summary = []
