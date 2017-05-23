@@ -123,21 +123,28 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         shapefile with a new NetworkID attribute.
         :return:
         """
+
         start_string = time.ctime()
         start_time = time.time()
+        self.completed = 0
         self.display_log_txt("Processing started: {0}".format(start_string))
+        QtCore.QCoreApplication.instance().processEvents()
 
         self.display_log_txt("Importing stream network shapefile...")
+        QtCore.QCoreApplication.instance().processEvents()
         DG = network.import_shp(self.input_shp)
 
         self.display_log_txt("Finding subnetworks...")
         list_SG = network.get_subgraphs(DG)
+        QtCore.QCoreApplication.instance().processEvents()
 
         self.display_log_txt("Calculating subnetwork IDs...")
         UG = network.calc_network_id(list_SG)
+        QtCore.QCoreApplication.instance().processEvents()
 
         self.display_log_txt("Writing to shapefile...")
         network.export_shp(UG, self.output_folder)
+        QtCore.QCoreApplication.instance().processEvents()
 
         stop_string = time.ctime()
         stop_time = time.time()
@@ -150,4 +157,8 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         list_results = network.get_graph_attributes(UG, "NetworkID")
         for result in list_results:
             self.display_log_txt(result)
+        QtCore.QCoreApplication.instance().processEvents()
         # TODO self.display_results_lyr
+
+class TaskThread(QtCore.QThread):
+    taskComplete = QtCore.pyqtSignal()
