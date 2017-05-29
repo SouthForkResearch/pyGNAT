@@ -160,5 +160,6 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         QtCore.QCoreApplication.instance().processEvents()
         # TODO self.display_results_lyr
 
+
 class TaskThread(QtCore.QThread):
     taskComplete = QtCore.pyqtSignal()
