@@ -142,8 +142,8 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         UG = network.calc_network_id(list_SG)
         QtCore.QCoreApplication.instance().processEvents()
 
-        self.display_log_txt("Writing to shapefile...")
-        network.export_shp(UG, self.output_folder)
+        self.display_log_txt("Writing output shapefiles...")
+        network.export_shp(UG, self.input_shp, self.output_folder)
         QtCore.QCoreApplication.instance().processEvents()
 
         stop_string = time.ctime()
