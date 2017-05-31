@@ -55,7 +55,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         self.formFields = [self.txtInputNetwork, self.txtOutputFolder, self.txtResults]
         self.btnReset.clicked.connect(self.reset_form)
 
-        #self.btnExportToTxt.clicked.connect(self.export_to_txt(self.str_results)) # may need to add input parameter for function
+        self.btnExportToTxt.clicked.connect(self.export_to_txt)
         #self.btnDisplayResults.clicked.connect(self.display_results_lyr()) # may need to add input parameter for function
         self.btnClose.clicked.connect(self.close)
 
@@ -65,7 +65,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         Set QT QLineEdit control to user-specified file name.
         :param txtControl: name of the QLineEdit control
         """
-        file_path = QtGui.QFileDialog.getOpenFileName(self, "Open shapefile", r"C:\Testing\pyGNAT\data", "Shapefile (*.shp)")
+        file_path = QtGui.QFileDialog.getOpenFileName(self, "Open Shapefile", r"C:\Testing\pyGNAT\data", "Shapefile (*.shp)")
         win_path = QDir.toNativeSeparators(file_path)
         self.input_shp = str(win_path)
         self.txtInputNetwork.setText(self.input_shp)
@@ -76,7 +76,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         Set QT QLineEdit control to user-specified folder name.
         :param txtControl: name of the QLineEdit control
         """
-        self.output_folder = QtGui.QFileDialog.getExistingDirectory(self, "Select output folder", r"C:\Testing\pyGNAT\data", QtGui.QFileDialog.ShowDirsOnly)
+        self.output_folder = QtGui.QFileDialog.getExistingDirectory(self, "Select Output Folder", r"C:\Testing\pyGNAT\data", QtGui.QFileDialog.ShowDirsOnly)
         self.txtOutputFolder.setText(self.output_folder)
 
 
@@ -102,15 +102,15 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         pass
 
 
-    def export_to_txt(self, str_results):
+    def export_to_txt(self):
         """
         Exports processing results to a text file.
         :return:
         """
         file_name = QtGui.QFileDialog.getSaveFileName(self,
                                                       'Save Results as Text File',
-                                                      '',
-                                                      selectedFilter='*.txt')
+                                                      "C:\\",
+                                                      "Text (*.txt)")
         with open(file_name, 'w') as file_export:
             file_export.write(str(self.txtResults.toPlainText()))
 
