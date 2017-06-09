@@ -24,8 +24,9 @@
 import os
 import time
 from PyQt4 import QtGui, uic
-from PyQt4.QtCore import QDir
+from PyQt4.QtCore import *
 import network as network
+import lib.symbolizer as symbol
 from qgis.core import *
 from qgis.gui import *
 import qgis.utils
@@ -57,7 +58,7 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         self.btnReset.clicked.connect(self.reset_form)
 
         self.btnExportToTxt.clicked.connect(self.export_to_txt)
-        #self.btnDisplayResults.clicked.connect(self.display_results_lyr()) # may need to add input parameter for function
+        self.btnDisplayResults.clicked.connect(self.display_results_lyr)
         self.btnClose.clicked.connect(self.close)
 
 
@@ -84,6 +85,10 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
     def reset_form(self):
         for field in self.formFields:
             field.clear()
+        if hasattr(self, "input_shp"):
+            del self.input_shp
+        if hasattr(self, "output_folder"):
+            del self.output_folder
 
 
     def display_log_txt(self, str_results):
@@ -100,7 +105,15 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         Display processed network shapefile, with a random
         :return:
         """
-        pass
+        for lyr in QgsMapLayerRegistry.instance().mapLayers().values():
+            if lyr.name() == "network_lines":
+                QgsMapLayerRegistry.instance().removeMapLayer(lyr)
+        edge_name = "network_lines.shp"
+        out_edge_shp = self.output_folder + "\\" + edge_name
+        output_layer = QgsVectorLayer(out_edge_shp, "network_lines", "ogr")
+        QgsMapLayerRegistry.instance().addMapLayer(output_layer)
+        symbol.symbolize_networkID(output_layer)
+        qgis.utils.iface.mapCanvas().refresh()
 
 
     def export_to_txt(self):
@@ -120,6 +133,10 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
                                        level=QgsMessageBar.INFO)
 
 
+    def closeEvent(self, event):
+        self.reset_form()
+
+
     def calc_subnetwork_id(self):
         """
         Main processing method, which imports a stream network shapefile,
@@ -128,7 +145,6 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         shapefile with a new NetworkID attribute.
         :return:
         """
-
         start_string = time.ctime()
         start_time = time.time()
         self.completed = 0
@@ -163,8 +179,3 @@ class GNATDialog(QtGui.QDialog, FORM_CLASS):
         for result in list_results:
             self.display_log_txt(result)
         QtCore.QCoreApplication.instance().processEvents()
-        # TODO self.display_results_lyr
-
-
-class TaskThread(QtCore.QThread):
-    taskComplete = QtCore.pyqtSignal()
