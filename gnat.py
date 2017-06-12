@@ -160,7 +160,7 @@ class GNAT:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path1 = ':/plugins/GNAT/icon_buildnetwork.png'
+        icon_path1 = ':/plugins/pyGNAT/icon_buildnetwork.png'
         self.add_action(
             icon_path1,
             text=self.tr(u'Build Network'),

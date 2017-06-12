@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/GNAT" >
-        <file>icon.png</file>
+    <qresource prefix="/plugins/pyGNAT" >
+        <file>icon_buildnetwork.png</file>
     </qresource>
 </RCC>
