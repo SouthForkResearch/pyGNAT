@@ -31,7 +31,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .build_network import GNAT
+    from .gnat import GNAT
     return GNAT(iface)
 
 

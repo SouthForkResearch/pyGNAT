@@ -25,7 +25,7 @@ from PyQt4.QtGui import QAction, QIcon
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
-from build_network_dialog import GNATDialog
+from build_network_dialog import BuildNetworkDialog
 import os.path
 
 
@@ -58,6 +58,8 @@ class GNAT:
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
 
+        # Create the dialog (after translation) and keep reference
+        self.dlg1 = BuildNetworkDialog()
 
         # Declare instance attributes
         self.actions = []
@@ -132,9 +134,6 @@ class GNAT:
         :rtype: QAction
         """
 
-        # Create the dialog (after translation) and keep reference
-        self.dlg = GNATDialog()
-
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -161,11 +160,11 @@ class GNAT:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/GNAT/icon.png'
+        icon_path1 = ':/plugins/GNAT/icon_buildnetwork.png'
         self.add_action(
-            icon_path,
+            icon_path1,
             text=self.tr(u'Build Network'),
-            callback=self.run,
+            callback=self.run1,
             parent=self.iface.mainWindow())
 
 
@@ -173,19 +172,19 @@ class GNAT:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&GNaT'),
+                self.tr(u'&GNAT'),
                 action)
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
 
 
-    def run(self):
+    def run1(self):
         """Run method that performs all the real work"""
         # show the dialog
-        self.dlg.show()
+        self.dlg1.show()
         # Run the dialog event loop
-        result = self.dlg.exec_()
+        result = self.dlg1.exec_()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
