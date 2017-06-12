@@ -190,19 +190,3 @@ class BuildNetworkDialog(QtGui.QDialog, FORM_CLASS):
         elif self.txtOutputFolder.text() == "":
             qgis.utils.iface.messageBar().pushMessage("Error", "Select output directory",
                                                       level=QgsMessageBar.CRITICAL)
-
-
-    def inputCheck(self):
-        if self.txtInputNetwork.text() == "":
-            QtGui.QMessageBox.information(None, "Warning!", "Select a shapefile")
-            return False
-        if self.txtOutputFolder.text() == "":
-            QtGui.QMessageBox.information(None, "Warning!", "Select a output directory")
-            return False
-        return True
-
-
-    def accept(self):
-        validInput = self.inputCheck()
-        if validInput:
-            self.done(1)  # Only accept the dialog if all inputs are valid
