@@ -61,6 +61,9 @@ class BuildNetworkDialog(QtGui.QDialog, FORM_CLASS):
         self.btnDisplayResults.clicked.connect(self.display_results_lyr)
         self.btnClose.clicked.connect(self.close)
 
+        self.input_shp = ""
+        self.output_folder =""
+
 
     def file_browser(self):
         """
@@ -145,37 +148,61 @@ class BuildNetworkDialog(QtGui.QDialog, FORM_CLASS):
         shapefile with a new NetworkID attribute.
         :return:
         """
-        start_string = time.ctime()
-        start_time = time.time()
-        self.completed = 0
-        self.display_log_txt("Processing started: {0}".format(start_string))
-        QtCore.QCoreApplication.instance().processEvents()
+        if self.txtInputNetwork.text() != "" and self.txtOutputFolder.text() != "":
+            start_string = time.ctime()
+            start_time = time.time()
+            self.completed = 0
+            self.display_log_txt("Processing started: {0}".format(start_string))
+            QtCore.QCoreApplication.instance().processEvents()
 
-        self.display_log_txt("Importing stream network shapefile...")
-        QtCore.QCoreApplication.instance().processEvents()
-        DG = network.import_shp(self.input_shp)
+            self.display_log_txt("Importing stream network shapefile...")
+            QtCore.QCoreApplication.instance().processEvents()
+            DG = network.import_shp(self.input_shp)
 
-        self.display_log_txt("Finding subnetworks...")
-        list_SG = network.get_subgraphs(DG)
-        QtCore.QCoreApplication.instance().processEvents()
+            self.display_log_txt("Finding subnetworks...")
+            list_SG = network.get_subgraphs(DG)
+            QtCore.QCoreApplication.instance().processEvents()
 
-        self.display_log_txt("Calculating subnetwork IDs...")
-        UG = network.calc_network_id(list_SG)
-        QtCore.QCoreApplication.instance().processEvents()
+            self.display_log_txt("Calculating subnetwork IDs...")
+            UG = network.calc_network_id(list_SG)
+            QtCore.QCoreApplication.instance().processEvents()
 
-        self.display_log_txt("Writing output shapefiles...")
-        network.export_shp(UG, self.input_shp, self.output_folder)
-        QtCore.QCoreApplication.instance().processEvents()
+            self.display_log_txt("Writing output shapefiles...")
+            network.export_shp(UG, self.input_shp, self.output_folder)
+            QtCore.QCoreApplication.instance().processEvents()
 
-        stop_string = time.ctime()
-        stop_time = time.time()
-        total_time = round(((stop_time - start_time)/60), 2)
-        self.display_log_txt("Processing completed: {0}".format(stop_string))
-        self.display_log_txt("Total processing time: {0} minutes".format(total_time))
-        self.display_log_txt("--------------------------\n")
+            stop_string = time.ctime()
+            stop_time = time.time()
+            total_time = round(((stop_time - start_time)/60), 2)
+            self.display_log_txt("Processing completed: {0}".format(stop_string))
+            self.display_log_txt("Total processing time: {0} minutes".format(total_time))
+            self.display_log_txt("--------------------------\n")
 
-        # Display results as text and layers in QGIS TOC
-        list_results = network.get_graph_attributes(UG, "NetworkID")
-        for result in list_results:
-            self.display_log_txt(result)
-        QtCore.QCoreApplication.instance().processEvents()
+            # Display results as text and layers in QGIS TOC
+            list_results = network.get_graph_attributes(UG, "NetworkID")
+            for result in list_results:
+                self.display_log_txt(result)
+            if self.inputCheck():
+                QtCore.QCoreApplication.instance().processEvents()
+        elif self.txtInputNetwork.text() == "":
+            qgis.utils.iface.messageBar().pushMessage("Error", "Shapefile required",
+                                                      level=QgsMessageBar.CRITICAL)
+        elif self.txtOutputFolder.text() == "":
+            qgis.utils.iface.messageBar().pushMessage("Error", "Select output directory",
+                                                      level=QgsMessageBar.CRITICAL)
+
+
+    def inputCheck(self):
+        if self.txtInputNetwork.text() == "":
+            QtGui.QMessageBox.information(None, "Warning!", "Select a shapefile")
+            return False
+        if self.txtOutputFolder.text() == "":
+            QtGui.QMessageBox.information(None, "Warning!", "Select a output directory")
+            return False
+        return True
+
+
+    def accept(self):
+        validInput = self.inputCheck()
+        if validInput:
+            self.done(1)  # Only accept the dialog if all inputs are valid
