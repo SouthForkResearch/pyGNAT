@@ -20,6 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 """
+
+# VERSION 0.1
+
+
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
 # Initialize Qt resources from file resources.py
