@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 
-# VERSION 0.1
+# VERSION 0.2
 
 
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
