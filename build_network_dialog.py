@@ -182,8 +182,8 @@ class BuildNetworkDialog(QtGui.QDialog, FORM_CLASS):
             list_results = network.get_graph_attributes(UG, "NetworkID")
             for result in list_results:
                 self.display_log_txt(result)
-            if self.inputCheck():
-                QtCore.QCoreApplication.instance().processEvents()
+            # if self.inputCheck():
+            #     QtCore.QCoreApplication.instance().processEvents()
         elif self.txtInputNetwork.text() == "":
             qgis.utils.iface.messageBar().pushMessage("Error", "Shapefile required",
                                                       level=QgsMessageBar.CRITICAL)

@@ -1,16 +1,12 @@
 import random
+from osgeo import ogr
 from PyQt4.QtGui import QColor
 from qgis.core import QgsSymbolV2, QgsRendererCategoryV2, QgsCategorizedSymbolRendererV2
 
 
-def symbolize_networkID(shp):
-
+def symbolize_networkID(layer):
     # get network IDs from exported network shapefile
-    from osgeo import ogr
-    driver = ogr.GetDriverByName('ESRI Shapefiles')
-    dataSrc = driver.Open(shp, 0)
-    layer = dataSrc.GetLayer()
-    index = layer.fieldNameIndex("NetworkID")
+    index = layer.fieldNameIndex('NetworkID')
     id_values = layer.uniqueValues(index)
 
     categories = []
@@ -20,7 +16,7 @@ def symbolize_networkID(shp):
         category = QgsRendererCategoryV2(id, symbol, str(id))
         categories.append(category)
 
-    expression = 'NetworkID'
+    expression = "NetworkID"
     renderer = QgsCategorizedSymbolRendererV2(expression, categories)
     layer.setRendererV2(renderer)
     return

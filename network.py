@@ -11,25 +11,18 @@ import networkx as nx
 
 def import_shp(file_path):
     if os.path.isfile(file_path) and file_path.endswith(".shp"):
-        DG = nx.read_shp(file_path)
+        DG = nx.read_shp(file_path, simplify=True)
         return DG
     else:
         print "ERROR: Could not convert to networkx graph, not a shapefile"
         DG = nx.Graph()
         return DG
 
-# FIXME need to finish implementing this
-# def export_shp(G, folder_path):
-#     if G is not None:
-#         nx.write_shp(G, folder_path)
-#     else:
-#         print "ERROR: Could not write to shapefile, graph is empty"
-#     return
 
 def export_shp(G, inshp, outdir):
     """
     This is a re-purposing of the NetworkX write_shp module with some minor changes.
-    :param G: networkx directional graph 
+    :param G: networkx directional graph
     :param outdir: directory where output shapefiles will be written
     """
     try:
