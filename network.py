@@ -365,7 +365,7 @@ def flow_errors(G, src, ud=None):
     stopnodes: break points in the network
     """
     RG = nx.reverse(G, copy=True)
-    badedges = []
+    upstream_edges = []
     gnodes = list(nx.dfs_preorder_nodes(RG, src))
     if not ud:
         ud = RG.to_undirected()
@@ -374,8 +374,28 @@ def flow_errors(G, src, ud=None):
         start = edge[0]
         end = edge[1]
         if end in gnodes and start not in gnodes:
-                badedges.append(RG.edges(start)[0])
-    return badedges
+                upstream_edges.append(RG.edges(start)[0])
+
+    # add new "error_flow" attribute to graph
+    add_attribute(RG, "error_flow", 0)  # add 'default' value
+    errors_G = nx.DiGraph(upstream_edges)
+    update_attribute(errors_G, "error_flow", 1) # add 'upstream' value
+    DG = nx.reverse(RG, copy=True)
+    upstream_G = nx.compose(DG, errors_G)
+    return upstream_G
+
+
+def duplicate_errors(G, attrb_name, attrb_value):
+    from collections import Counter
+    list_nodes = [(u,v) for u,v,d in G.edges_iter(data=True) if d[attrb_name] == attrb_value]
+    duplicates = [k for k,v in Counter(list_nodes).items() if v > 1]
+    errors_G = nx.DiGraph(duplicates)
+
+    # add new "error_dupe" attribute to graph
+    add_attribute(G, "error_dupe", 0)
+    update_attribute(errors_G, "error_dupe", 1)
+    dupes_G = nx.compose(G, errors_G)
+    return dupes_G
 
 
 def findnodewithID(id):
