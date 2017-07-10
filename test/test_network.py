@@ -1,12 +1,13 @@
 import unittest
-import lib.network as net
+import network as net
 import networkx as nx
 
-inFullNetworkShp = r'C:\dev\pyGNAT\experiments\shapefiles\FullNetwork_sm.shp'
-inDisconnectedShp = r'C:\dev\pyGNAT\experiments\shapefiles\NHD_Disconnected.shp'
-inConnectedShp = r'C:\dev\pyGNAT\experiments\shapefiles\NHD_Braids.shp'
-inBraidSimpleShp = r'C:\dev\pyGNAT\experiments\shapefiles\Braid_simple.shp'
-outShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\Out\output_test.shp'
+inFullNetworkShp = r'C:\JL\Testing\pyGNAT\issue29\In\FullNetwork.shp'
+inDisconnectedShp = r'C:\JL\Testing\pyGNAT\issue29\In\NHD_Disconnected.shp'
+inConnectedShp = r'C:\JL\Testing\pyGNAT\issue29\In\NHD_Braids.shp'
+inBraidSimpleShp = r'C:\JL\Testing\pyGNAT\issue29\In\Braid_simple.shp'
+inFlowDirShp = r'C:\JL\Testing\pyGNAT\issue29\In\NHD_Flow_Direction.shp'
+outShp = r'C:\JL\Testing\pyGNAT\issue29\Out'
 
 
 class NetworkTestCase(unittest.TestCase):
@@ -171,6 +172,15 @@ class NetworkTestCase(unittest.TestCase):
         final_G = net.merge_subgraphs(DG, outflow_G, headwater_G, braid_G)
         nx.write_shp(final_G, outShp)  # temporary for review
         self.assertTrue(final_G is not None)
+
+    def test_error_flow_dir(self):
+        DG = nx.read_shp(inFlowDirShp, simplify=True)
+        nodeID = net.findnodewithID(DG, 2695)
+        error_G = net.flow_errors(DG, nodeID[1])
+        nx.write_shp(error_G, outShp)
+        error_only_G = net.select_by_attribute(error_G, "error_flow", 1)
+        self.assertTrue(error_only_G is not None)
+
 
     if __name__ == '__main__':
         unittest.main()

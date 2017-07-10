@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GNATDialogBase</class>
+ <widget class="QDialog" name="GNATDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>747</width>
+    <height>495</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>GNaT</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>6</x>
+     <y>6</y>
+     <width>736</width>
+     <height>484</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="FindSubnetworks">
+    <attribute name="title">
+     <string>Find Subnetworks</string>
+    </attribute>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>9</y>
+       <width>703</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="lblInput_2">
+        <property name="text">
+         <string>Input stream network shapefile:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <item>
+         <widget class="QLineEdit" name="txtInputNetwork_2">
+          <property name="toolTip">
+           <string>Shapefile representing a stream network which serves as the primary input for the Build Network tool.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnBrowseInput_2">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="layoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>52</x>
+       <y>51</y>
+       <width>664</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <widget class="QLabel" name="lblOutput_2">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
+        <property name="text">
+         <string>Processing output folder:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_10">
+        <item>
+         <widget class="QLineEdit" name="txtOutputFolder_2">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A folder or directory which where tool outputs will be written. The outputs include:&lt;/p&gt;&lt;p&gt;- stream network line shapefile, with network IDs added as a new attribute field&lt;/p&gt;&lt;p&gt;- stream network nodes point shapefile, representing nodes within the network&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnBrowseOutput_2">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QPlainTextEdit" name="txtResults">
+     <property name="geometry">
+      <rect>
+       <x>13</x>
+       <y>174</y>
+       <width>700</width>
+       <height>229</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOn</enum>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QWidget" name="layoutWidget_4">
+     <property name="geometry">
+      <rect>
+       <x>411</x>
+       <y>93</y>
+       <width>307</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_12">
+      <item>
+       <widget class="QPushButton" name="btnRun_2">
+        <property name="text">
+         <string>Run</string>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnReset_2">
+        <property name="text">
+         <string>Reset</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnClose_2">
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="lblResultsTxt">
+     <property name="geometry">
+      <rect>
+       <x>13</x>
+       <y>153</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Processing results:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnExportToTxt">
+     <property name="geometry">
+      <rect>
+       <x>618</x>
+       <y>414</y>
+       <width>97</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Export to TXT</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnDisplayResults_2">
+     <property name="geometry">
+      <rect>
+       <x>510</x>
+       <y>135</y>
+       <width>197</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Display Results</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>Find Network Errors</string>
+    </attribute>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

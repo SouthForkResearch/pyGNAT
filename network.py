@@ -333,29 +333,6 @@ def merge_subgraphs(G, outflow_G, headwater_G, braid_G):
     return compose_G
 
 
-# def check_flow_dir(G, start_node):
-#
-#     RG = nx.DiGraph.reverse(G, copy=True)
-#     add_attribute(RG, "error_flow", 0) # add 'default' reach type
-#
-#     # Get first downstream node
-#     successor_dict = nx.dfs_successors(RG, start_node)    predecessor_dict = nx.dfs_predecessors(G, start_node)
-#
-#     RG_edges = RG.edges(data=True)
-#     upstream_edges = []
-#     for e in RG_edges:
-#         if e[0] not in successor_dict.keys():
-#
-#             upstream_edges.append(e)
-#
-#     # add new "FlowDir" attribute, based on bad_edges list
-#     upstream_graph = nx.DiGraph(upstream_edges)
-#     # set reach_type attribute for outflow and headwater edges
-#     update_attribute(upstream_graph, "error_flow", 1)
-#     compose_G = nx.compose(RG, upstream_graph)
-#     return compose_G
-
-
 def flow_errors(G, src, ud=None):
     """Returns the first edges that do not conform to the flow direction
     implicit in defined source node.
@@ -365,54 +342,30 @@ def flow_errors(G, src, ud=None):
     stopnodes: break points in the network
     """
     RG = nx.reverse(G, copy=True)
-    upstream_edges = []
+    upstream_G = nx.DiGraph()
     gnodes = list(nx.dfs_preorder_nodes(RG, src))
     if not ud:
         ud = RG.to_undirected()
-    connected = RG.edges(nx.dfs_tree(ud, src).nodes())
+    connected = RG.edges(nx.dfs_tree(ud, src).nodes(), data=True)
     for edge in connected:
         start = edge[0]
         end = edge[1]
         if end in gnodes and start not in gnodes:
-                upstream_edges.append(RG.edges(start)[0])
+            upstream_G.add_edge(*edge)
 
     # add new "error_flow" attribute to graph
     add_attribute(RG, "error_flow", 0)  # add 'default' value
-    errors_G = nx.DiGraph(upstream_edges)
-    update_attribute(errors_G, "error_flow", 1) # add 'upstream' value
+    add_attribute(upstream_G, "error_flow", 1)
+    #update_attribute(upstream_edges, "error_flow", 1) # add 'upstream' value
     DG = nx.reverse(RG, copy=True)
-    upstream_G = nx.compose(DG, errors_G)
+    upstream_G = nx.compose(DG, upstream_G)
     return upstream_G
 
 
-def duplicate_errors(G, attrb_name, attrb_value):
-    from collections import Counter
-    list_nodes = [(u,v) for u,v,d in G.edges_iter(data=True) if d[attrb_name] == attrb_value]
-    duplicates = [k for k,v in Counter(list_nodes).items() if v > 1]
-    errors_G = nx.DiGraph(duplicates)
-
-    # add new "error_dupe" attribute to graph
-    add_attribute(G, "error_dupe", 0)
-    update_attribute(errors_G, "error_dupe", 1)
-    dupes_G = nx.compose(G, errors_G)
-    return dupes_G
-
-
-def findnodewithID(id):
+def findnodewithID(G, id):
     """
     One line helper function to find a node with a given ID
     :param id:
     :return:
     """
     return next(iter([e for e in G.edges_iter() if G.get_edge_data(*e)['OBJECTID'] == id]), None)
-
-
-# TEST
-inshp = r"C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_Flow_Direction.shp"
-outdir = r"C:\JL\Testing\pyGNAT\NetworkFeatures\Out"
-G = nx.read_shp(inshp)
-start_node = findnodewithID(2695.0)
-error_edges = flow_errors(G, start_node[1])
-error_G = nx.DiGraph(error_edges)
-export_shp(error_G, inshp, outdir)
-#  TEST
