@@ -25,23 +25,24 @@ import os
 import time
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import *
-import network as network
-import symbolizer as symbol
 from qgis.core import *
 from qgis.gui import *
 import qgis.utils
+import network as network
+import symbolizer as symbol
+
 
 
 # constants
 HELP_URL = "#"
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'build_network_dialog_base.ui'))
+    os.path.dirname(__file__), 'find_subnetworks_dialog.ui'))
 
 
-class BuildNetworkDialog(QtGui.QDialog, FORM_CLASS):
+class FindSubnetworksDialog(QtGui.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
-        super(BuildNetworkDialog, self).__init__(parent)
+        super(FindSubnetworksDialog, self).__init__(parent)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see

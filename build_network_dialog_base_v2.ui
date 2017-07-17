@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>747</width>
-    <height>495</height>
+    <width>751</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,16 +16,19 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>6</x>
-     <y>6</y>
-     <width>736</width>
-     <height>484</height>
+     <x>9</x>
+     <y>3</y>
+     <width>730</width>
+     <height>235</height>
     </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
    </property>
    <property name="currentIndex">
     <number>0</number>
    </property>
-   <widget class="QWidget" name="FindSubnetworks">
+   <widget class="QWidget" name="tabFindSubnetworks">
     <attribute name="title">
      <string>Find Subnetworks</string>
     </attribute>
@@ -35,12 +38,12 @@
        <x>12</x>
        <y>9</y>
        <width>703</width>
-       <height>32</height>
+       <height>34</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QLabel" name="lblInput_2">
+       <widget class="QLabel" name="lblInput">
         <property name="text">
          <string>Input stream network shapefile:</string>
         </property>
@@ -49,14 +52,14 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
-         <widget class="QLineEdit" name="txtInputNetwork_2">
+         <widget class="QLineEdit" name="txtInputNetwork_tab1">
           <property name="toolTip">
-           <string>Shapefile representing a stream network which serves as the primary input for the Build Network tool.</string>
+           <string>Shapefile representing a stream network which serves as the primary input for the Find Subnetworks tool.</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnBrowseInput_2">
+         <widget class="QPushButton" name="btnBrowseInput">
           <property name="text">
            <string>...</string>
           </property>
@@ -69,34 +72,34 @@
     <widget class="QWidget" name="layoutWidget_2">
      <property name="geometry">
       <rect>
-       <x>52</x>
-       <y>51</y>
-       <width>664</width>
-       <height>32</height>
+       <x>96</x>
+       <y>87</y>
+       <width>619</width>
+       <height>34</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_9">
       <item>
-       <widget class="QLabel" name="lblOutput_2">
+       <widget class="QLabel" name="lblOutput">
         <property name="focusPolicy">
          <enum>Qt::StrongFocus</enum>
         </property>
         <property name="text">
-         <string>Processing output folder:</string>
+         <string>Output directory:</string>
         </property>
        </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_10">
         <item>
-         <widget class="QLineEdit" name="txtOutputFolder_2">
+         <widget class="QLineEdit" name="txtOutputFolder_tab1">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A folder or directory which where tool outputs will be written. The outputs include:&lt;/p&gt;&lt;p&gt;- stream network line shapefile, with network IDs added as a new attribute field&lt;/p&gt;&lt;p&gt;- stream network nodes point shapefile, representing nodes within the network&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A folder or directory which where tool outputs will be written. The outputs include:&lt;/p&gt;&lt;p&gt;- stream network line shapefile, with network IDs added as a new attribute field&lt;br/&gt;- stream network nodes point shapefile, representing nodes within the network&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnBrowseOutput_2">
+         <widget class="QPushButton" name="btnBrowseOutput">
           <property name="text">
            <string>...</string>
           </property>
@@ -106,34 +109,18 @@
       </item>
      </layout>
     </widget>
-    <widget class="QPlainTextEdit" name="txtResults">
-     <property name="geometry">
-      <rect>
-       <x>13</x>
-       <y>174</y>
-       <width>700</width>
-       <height>229</height>
-      </rect>
-     </property>
-     <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOn</enum>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QWidget" name="layoutWidget_4">
      <property name="geometry">
       <rect>
-       <x>411</x>
-       <y>93</y>
-       <width>307</width>
-       <height>30</height>
+       <x>519</x>
+       <y>132</y>
+       <width>196</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_12">
       <item>
-       <widget class="QPushButton" name="btnRun_2">
+       <widget class="QPushButton" name="btnRun_tab1">
         <property name="text">
          <string>Run</string>
         </property>
@@ -143,68 +130,363 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnReset_2">
+       <widget class="QPushButton" name="btnReset_tab1">
         <property name="text">
          <string>Reset</string>
         </property>
        </widget>
       </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget_3">
+     <property name="geometry">
+      <rect>
+       <x>285</x>
+       <y>48</y>
+       <width>430</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
-       <widget class="QPushButton" name="btnClose_2">
+       <widget class="QLabel" name="lblNetworkID">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="text">
-         <string>Close</string>
+         <string>Name the new subnetwork ID field:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="txtNetworkID_tab1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Provide a name for the ID field which will store unique identifier codes for each subnetwork that is found in the input stream network shapefile.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
-    <widget class="QLabel" name="lblResultsTxt">
+   </widget>
+   <widget class="QWidget" name="tabGenerateNetworkAttributes">
+    <attribute name="title">
+     <string>Generate Network Attributes</string>
+    </attribute>
+    <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>13</x>
-       <y>153</y>
-       <width>111</width>
-       <height>16</height>
+       <x>12</x>
+       <y>9</y>
+       <width>703</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="lblInput_tab2">
+        <property name="text">
+         <string>Input stream network shapefile:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLineEdit" name="txtInputNetwork_tab2">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shapefile representing a stream network which serves as the primary input for the &lt;span style=&quot; font-weight:600;&quot;&gt;Generate Network Attributes&lt;/span&gt; tool. Ideally, this shapefile should be the output from the &lt;span style=&quot; font-weight:600;&quot;&gt;Find Subnetworks&lt;/span&gt; tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnBrowseInput_tab2">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>120</y>
+       <width>703</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="lblOutput_tab2">
+        <property name="text">
+         <string>Output shapefile with network attributes:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLineEdit" name="txtOutputShp">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shapefile with generated network attributes, produced as output by the tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnBrowseOutput_tab2">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget_5">
+     <property name="geometry">
+      <rect>
+       <x>525</x>
+       <y>165</y>
+       <width>190</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <item>
+       <widget class="QPushButton" name="btnRun_tab2">
+        <property name="text">
+         <string>Run</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnReset_tab2">
+        <property name="text">
+         <string>Reset</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QCheckBox" name="checkBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>387</x>
+       <y>54</y>
+       <width>328</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="text">
-      <string>Processing results:</string>
+      <string>Does the input stream network include subnetworks?</string>
      </property>
     </widget>
+    <widget class="QLabel" name="lblNetworkID_tab2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>369</x>
+       <y>75</y>
+       <width>121</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Subnetwork ID field:</string>
+     </property>
+    </widget>
+    <widget class="QgsFieldComboBox" name="mFieldComboBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>492</x>
+       <y>78</y>
+       <width>220</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name of the ID field used to identify subnetworks within the input stream network shapefile.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="maxVisibleItems">
+      <number>15</number>
+     </property>
+    </widget>
+    <zorder>horizontalLayoutWidget</zorder>
+    <zorder>horizontalLayoutWidget_2</zorder>
+    <zorder>horizontalLayoutWidget_5</zorder>
+    <zorder></zorder>
+    <zorder>checkBox</zorder>
+    <zorder>lblNetworkID_tab2</zorder>
+    <zorder>mFieldComboBox</zorder>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btnClose_tab1">
+   <property name="geometry">
+    <rect>
+     <x>645</x>
+     <y>249</y>
+     <width>94</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </widget>
+  <widget class="QToolBox" name="toolBox">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>288</y>
+     <width>730</width>
+     <height>292</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Panel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="lineWidth">
+    <number>1</number>
+   </property>
+   <property name="midLineWidth">
+    <number>1</number>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="pageResults">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>728</width>
+      <height>228</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Processing Results</string>
+    </attribute>
     <widget class="QPushButton" name="btnExportToTxt">
      <property name="geometry">
       <rect>
-       <x>618</x>
-       <y>414</y>
-       <width>97</width>
+       <x>576</x>
+       <y>195</y>
+       <width>139</width>
        <height>28</height>
       </rect>
      </property>
      <property name="text">
-      <string>Export to TXT</string>
+      <string>Export Results to TXT</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnDisplayResults_2">
+    <widget class="QPlainTextEdit" name="txtResults">
      <property name="geometry">
       <rect>
-       <x>510</x>
-       <y>135</y>
-       <width>197</width>
-       <height>28</height>
+       <x>12</x>
+       <y>12</y>
+       <width>703</width>
+       <height>172</height>
       </rect>
      </property>
-     <property name="text">
-      <string>Display Results</string>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOn</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="backgroundVisible">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="tab_2">
-    <attribute name="title">
-     <string>Find Network Errors</string>
+   <widget class="QWidget" name="pageRiverscapes">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>728</width>
+      <height>228</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Riverscapes Project</string>
     </attribute>
    </widget>
   </widget>
+  <widget class="QPushButton" name="btnDisplayResults">
+   <property name="geometry">
+    <rect>
+     <x>378</x>
+     <y>246</y>
+     <width>109</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Display Results</string>
+   </property>
+  </widget>
+  <zorder>tabWidget</zorder>
+  <zorder>btnClose_tab1</zorder>
+  <zorder>txtResults</zorder>
+  <zorder>btnExportToTxt</zorder>
+  <zorder>toolBox</zorder>
+  <zorder>btnDisplayResults</zorder>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFieldComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsfieldcombobox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

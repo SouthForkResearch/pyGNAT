@@ -29,7 +29,7 @@ from PyQt4.QtGui import QAction, QIcon
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
-from build_network_dialog import BuildNetworkDialog
+from find_subnetworks_dialog import FindSubnetworksDialog
 import os.path
 
 
@@ -63,7 +63,7 @@ class GNAT:
                 QCoreApplication.installTranslator(self.translator)
 
         # Create the dialog (after translation) and keep reference
-        self.dlg1 = BuildNetworkDialog()
+        self.dlg1 = FindSubnetworksDialog()
 
         # Declare instance attributes
         self.actions = []
@@ -164,10 +164,10 @@ class GNAT:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path1 = ':/plugins/pyGNAT/icon_buildnetwork.png'
+        icon_path1 = ':/plugins/pyGNAT/icon_findsubnetworks.png'
         self.add_action(
             icon_path1,
-            text=self.tr(u'Build Network'),
+            text=self.tr(u'Find Subnetworks'),
             callback=self.run1,
             parent=self.iface.mainWindow())
 

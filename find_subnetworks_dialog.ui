@@ -6,90 +6,34 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>742</width>
-    <height>568</height>
+    <width>740</width>
+    <height>518</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GNaT</string>
+   <string>Find Subnetworks</string>
   </property>
-  <widget class="QLabel" name="lblResultsTxt">
-   <property name="geometry">
-    <rect>
-     <x>21</x>
-     <y>162</y>
-     <width>111</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Processing results:</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnExportToTxt">
-   <property name="geometry">
-    <rect>
-     <x>626</x>
-     <y>423</y>
-     <width>97</width>
-     <height>28</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Export to CSV</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lblInstructions">
-   <property name="geometry">
-    <rect>
-     <x>24</x>
-     <y>453</y>
-     <width>469</width>
-     <height>106</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>7</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Instructions&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Clicking &lt;span style=&quot; font-weight:600;&quot;&gt;Display Results&lt;/span&gt; will load the processed stream network into the current QGIS map legend and display area. The user can then manually perform edits to the shapefile to fix incorrectly disconnected sub-networks. Additional help is available in the &lt;a href=&quot;#&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wiki&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPlainTextEdit" name="txtResults">
-   <property name="geometry">
-    <rect>
-     <x>21</x>
-     <y>183</y>
-     <width>700</width>
-     <height>229</height>
-    </rect>
-   </property>
-   <property name="verticalScrollBarPolicy">
-    <enum>Qt::ScrollBarAlwaysOn</enum>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>378</x>
-     <y>102</y>
-     <width>345</width>
+     <x>327</x>
+     <y>105</y>
+     <width>395</width>
      <height>30</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_5">
     <item>
-     <widget class="QLabel" name="lblProcess">
+     <widget class="QPushButton" name="btnHelp">
       <property name="text">
-       <string>Process stream network:</string>
+       <string>Help</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnReset">
+      <property name="text">
+       <string>Reset</string>
       </property>
      </widget>
     </item>
@@ -104,9 +48,9 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btnReset">
+     <widget class="QPushButton" name="btnClose">
       <property name="text">
-       <string>Reset</string>
+       <string>Close</string>
       </property>
      </widget>
     </item>
@@ -192,8 +136,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>522</x>
-     <y>498</y>
+     <x>519</x>
+     <y>471</y>
      <width>199</width>
      <height>30</height>
     </rect>
@@ -206,14 +150,49 @@
       </property>
      </widget>
     </item>
-    <item>
-     <widget class="QPushButton" name="btnClose">
-      <property name="text">
-       <string>Close</string>
-      </property>
-     </widget>
-    </item>
    </layout>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>18</x>
+     <y>150</y>
+     <width>703</width>
+     <height>307</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Processing results</string>
+   </property>
+   <widget class="QPlainTextEdit" name="txtResults">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>24</y>
+      <width>670</width>
+      <height>229</height>
+     </rect>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnExportToTxt">
+    <property name="geometry">
+     <rect>
+      <x>588</x>
+      <y>264</y>
+      <width>97</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Export to TXT</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
