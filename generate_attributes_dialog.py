@@ -29,7 +29,8 @@ from PyQt4.QtCore import *
 from qgis.core import *
 from qgis.gui import *
 import qgis.utils
-import network as network
+import networkx as nx
+import network as net
 import symbolizer as symbol
 
 
@@ -125,8 +126,25 @@ class GenerateAttributesDialog(QtGui.QDialog, FORM_CLASS):
         qgis.utils.iface.messageBar().pushMessage("Info", "Processing results saved!",
                                                   level=QgsMessageBar.INFO)
 
+
     def closeEvent(self, event):
         self.reset_form()
+
+
+    def set_edge_types(G, network_id):
+        """
+        Determines edge types for a network graph. Intended for use with a loop
+        so as to process each subnetwork separately
+        :param network_id: Identifier value indicating a subnetwork
+        :return: a graph (i.e. subnetwork) with edge types set
+        """
+        subnet_G = net.select_by_attribute(G, "NetworkID", network_id)
+        net.add_attribute(subnet_G, "edge_type", "connector")
+        outflow_G = net.get_outflow_edges(subnet_G, "edge_type")
+        headwater_G = net.get_headwater_edges(subnet_G, "edge_type")
+        braid_G = net.get_braid_edges(subnet_G, "edge_type")
+        merge_G = nx.merge_subgraphs(subnet_G, outflow_G, headwater_G, braid_G)
+        return merge_G
 
 
     # TODO main processing method
@@ -141,9 +159,29 @@ class GenerateAttributesDialog(QtGui.QDialog, FORM_CLASS):
 
         #PSEUDO-CODE
         # import shapefile to MultiDiGraph network
-        # assign edge types
-        # assign node types
-        # calculate river kilometers from mouth
-        # calculate stream order
-        # assign branch ID
-        # display output by edge type (?)
+        if self.txtInputNetwork.text() != "" and self.txtOutputFolder.text() != "":
+            start_string = time.ctime()
+            start_time = time.time()
+            self.display_log_txt("Processing started: {0}".format(start_string))
+            QtCore.QCoreApplication.instance().processEvents()
+
+            self.display_log_txt("Importing stream network shapefile...")
+            QtCore.QCoreApplication.instance().processEvents()
+            MG = net.import_shp(self.input_shp)
+
+            # iterate through subnetworks
+            dict_attrb = nx.get_edge_attributes(MG, "NetworkID")
+            list_subnets = []
+            if len(dict_attrb) > 0:
+                network_id_list = net.get_unique_attrb(dict_attrb)
+                for id in network_id_list:
+                    edge_type_G = self.set_edge_types(MG, id)
+                    # TODO add other processes here
+                    # assign node types
+                    # calculate river kilometers from mouth
+                    # calculate stream order
+                    # assign branch ID
+                list_subnets.append(edge_type_G)
+
+        # display output by edge type
+        return

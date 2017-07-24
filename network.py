@@ -18,6 +18,58 @@ def import_shp(file_path):
         return DG
 
 
+# FROM Network Profiler (NAR)
+def import_shp(filepath, simplify=True):
+    """
+    This is slightly re-purposed version of read_shp from networkx. The only difference here
+    is that the shapefile is imported as a MultiDiGraph, instead of a DiGraph. This retains
+    multi-thread network features (i.e. braids) in the graph object.
+    :param filepath:
+    :param simplify:
+    :return:
+    """
+    try:
+        from osgeo import ogr
+    except ImportError:
+        raise ImportError("read_shp requires OGR: http://www.gdal.org/")
+
+    if not isinstance(filepath, str):
+        return
+
+    net = nx.MultiDiGraph()
+    shp = ogr.Open(filepath)
+    for lyr in shp:
+        fields = [x.GetName() for x in lyr.schema]
+        for f in lyr:
+            flddata = [f.GetField(f.GetFieldIndex(x)) for x in fields]
+            g = f.geometry()
+            attributes = dict(zip(fields, flddata))
+            attributes["ShpName"] = lyr.GetName()
+            if g.GetGeometryType() == 1:  # point
+                net.add_node((g.GetPoint_2D(0)), attributes)
+            if g.GetGeometryType() == 2:  # linestring
+                last = g.GetPointCount() - 1
+                if simplify:
+                    attributes["Wkb"] = g.ExportToWkb()
+                    attributes["Wkt"] = g.ExportToWkt()
+                    attributes["Json"] = g.ExportToJson()
+                    net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
+                else:
+                    # separate out each segment as individual edge
+                    for i in range(last):
+                        pt1 = g.GetPoint_2D(i)
+                        pt2 = g.GetPoint_2D(i + 1)
+                        segment = ogr.Geometry(ogr.wkbLineString)
+                        segment.AddPoint_2D(pt1[0], pt1[1])
+                        segment.AddPoint_2D(pt2[0], pt2[1])
+                        attributes["Wkb"] = segment.ExportToWkb()
+                        attributes["Wkt"] = segment.ExportToWkt()
+                        attributes["Json"] = segment.ExportToJson()
+                        del segment
+                        net.add_edge(pt1, pt2, attributes)
+    return net
+
+
 def export_shp(G, inshp, outdir):
     """
     This is a re-purposing of the NetworkX write_shp module with some minor changes.
@@ -369,3 +421,16 @@ def findnodewithID(G, id):
     :return:
     """
     return next(iter([e for e in G.edges_iter() if G.get_edge_data(*e)['OBJECTID'] == id]), None)
+
+
+def get_unique_attrb(dict):
+    unique_attrbs = sorted(set(dict.values()))
+    return unique_attrbs
+
+
+def get_node_types(G, attrb_field, attrb_value):
+    # method 1
+    list_nodes = [x for x,y in G.nodes(data=True) if y[attrb_field]==attrb_value]
+    # method 2
+    braid_to_connector = set(n for u,v,d in G.edges_iter(data=True) if d['TYPE_ATTRB'] == 'connector' for n in (u,v) if G.node[n][])
+    return list_nodes

@@ -43,7 +43,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnOutput">
+       <widget class="QPushButton" name="btnBrowseInput">
         <property name="text">
          <string>...</string>
         </property>
@@ -99,7 +99,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnInput">
+       <widget class="QPushButton" name="btnBrowseOutput">
         <property name="text">
          <string>...</string>
         </property>
@@ -200,13 +200,6 @@
     </property>
    </widget>
   </widget>
-  <zorder>horizontalLayoutWidget_2</zorder>
-  <zorder>label</zorder>
-  <zorder>chkNetworkErrors</zorder>
-  <zorder>horizontalLayoutWidget_4</zorder>
-  <zorder>horizontalLayoutWidget_5</zorder>
-  <zorder>groupBox</zorder>
-  <zorder>btnRun</zorder>
  </widget>
  <resources/>
  <connections/>
