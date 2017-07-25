@@ -18,56 +18,58 @@ def import_shp(file_path):
         return DG
 
 
-# FROM Network Profiler (NAR)
-def import_shp(filepath, simplify=True):
-    """
-    This is slightly re-purposed version of read_shp from networkx. The only difference here
-    is that the shapefile is imported as a MultiDiGraph, instead of a DiGraph. This retains
-    multi-thread network features (i.e. braids) in the graph object.
-    :param filepath:
-    :param simplify:
-    :return:
-    """
-    try:
-        from osgeo import ogr
-    except ImportError:
-        raise ImportError("read_shp requires OGR: http://www.gdal.org/")
-
-    if not isinstance(filepath, str):
-        return
-
-    net = nx.MultiDiGraph()
-    shp = ogr.Open(filepath)
-    for lyr in shp:
-        fields = [x.GetName() for x in lyr.schema]
-        for f in lyr:
-            flddata = [f.GetField(f.GetFieldIndex(x)) for x in fields]
-            g = f.geometry()
-            attributes = dict(zip(fields, flddata))
-            attributes["ShpName"] = lyr.GetName()
-            if g.GetGeometryType() == 1:  # point
-                net.add_node((g.GetPoint_2D(0)), attributes)
-            if g.GetGeometryType() == 2:  # linestring
-                last = g.GetPointCount() - 1
-                if simplify:
-                    attributes["Wkb"] = g.ExportToWkb()
-                    attributes["Wkt"] = g.ExportToWkt()
-                    attributes["Json"] = g.ExportToJson()
-                    net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
-                else:
-                    # separate out each segment as individual edge
-                    for i in range(last):
-                        pt1 = g.GetPoint_2D(i)
-                        pt2 = g.GetPoint_2D(i + 1)
-                        segment = ogr.Geometry(ogr.wkbLineString)
-                        segment.AddPoint_2D(pt1[0], pt1[1])
-                        segment.AddPoint_2D(pt2[0], pt2[1])
-                        attributes["Wkb"] = segment.ExportToWkb()
-                        attributes["Wkt"] = segment.ExportToWkt()
-                        attributes["Json"] = segment.ExportToJson()
-                        del segment
-                        net.add_edge(pt1, pt2, attributes)
-    return net
+# def import_shp(filepath, simplify=True):
+#     """
+#
+#     This is slightly re-purposed version of read_shp from networkx. The only difference here
+#     is that the shapefile is imported as a MultiDiGraph, instead of a DiGraph. This retains
+#     multi-thread network features (i.e. braids) in the graph object.
+#     :param filepath:
+#     :param simplify:
+#     :return:
+#     """
+#     try:
+#         from osgeo import ogr
+#     except ImportError:
+#         raise ImportError("read_shp requires OGR: http://www.gdal.org/")
+#
+#     if not isinstance(filepath, str):
+#         return
+#
+#     net = nx.MultiDiGraph() # FIXME
+#     # multidigraphs have a nested dictionary format,
+#     # so the rest of this code doesn't work
+#     shp = ogr.Open(filepath)
+#     for lyr in shp:
+#         fields = [x.GetName() for x in lyr.schema]
+#         for f in lyr:
+#             flddata = [f.GetField(f.GetFieldIndex(x)) for x in fields]
+#             g = f.geometry()
+#             attributes = dict(zip(fields, flddata))
+#             attributes["ShpName"] = lyr.GetName()
+#             if g.GetGeometryType() == 1:  # point
+#                 net.add_node((g.GetPoint_2D(0)), attributes)
+#             if g.GetGeometryType() == 2:  # linestring
+#                 last = g.GetPointCount() - 1
+#                 if simplify:
+#                     attributes["Wkb"] = g.ExportToWkb()
+#                     attributes["Wkt"] = g.ExportToWkt()
+#                     attributes["Json"] = g.ExportToJson()
+#                     net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
+#                 else:
+#                     # separate out each segment as individual edge
+#                     for i in range(last):
+#                         pt1 = g.GetPoint_2D(i)
+#                         pt2 = g.GetPoint_2D(i + 1)
+#                         segment = ogr.Geometry(ogr.wkbLineString)
+#                         segment.AddPoint_2D(pt1[0], pt1[1])
+#                         segment.AddPoint_2D(pt2[0], pt2[1])
+#                         attributes["Wkb"] = segment.ExportToWkb()
+#                         attributes["Wkt"] = segment.ExportToWkt()
+#                         attributes["Json"] = segment.ExportToJson()
+#                         del segment
+#                         net.add_edge(pt1, pt2, attributes)
+#     return net
 
 
 def export_shp(G, inshp, outdir):
@@ -370,18 +372,12 @@ def merge_subgraphs(G, outflow_G, headwater_G, braid_G):
     :param list_G: list of subgraphs with reach type attribute added
     :return G_compose: final graph output with all reach type attributes included
     """
-
-    # unfortunately this didn't work correctly
-    # SG = list_G.pop(0)
-    # compose_G = nx.compose(G, SG)
-    # if len(list_G) > 0:
-    #     merge_subgraphs(compose_G, list_G)
-
-    # this is not ideal, but the fancy recursion didn't work
     G1 = nx.compose(G, outflow_G)
     G2 = nx.compose(G1, headwater_G)
-    compose_G = nx.compose(G2, braid_G)
-
+    if braid_G is not None:
+        compose_G = nx.compose(G2, braid_G)
+    else:
+        compose_G = G2
     return compose_G
 
 
@@ -428,9 +424,27 @@ def get_unique_attrb(dict):
     return unique_attrbs
 
 
-def get_node_types(G, attrb_field, attrb_value):
-    # method 1
-    list_nodes = [x for x,y in G.nodes(data=True) if y[attrb_field]==attrb_value]
-    # method 2
-    braid_to_connector = set(n for u,v,d in G.edges_iter(data=True) if d['TYPE_ATTRB'] == 'connector' for n in (u,v) if G.node[n][])
-    return list_nodes
+def get_node_types(G, id, attrb_field, attrb_value):
+    ### pseudo-code ###
+    # reverse direction of network
+    reverse_G = G.reverse(copy=True)
+    # start at outflow node
+    outflow_node = findnodewithID(reverse_G, id)
+    # add NODE_TYPE = 'outflow'
+    add_attribute(reverse_G, "NODE_TYPE", "outflow")
+    # iterate through nodes up network
+    # for each node:
+        # get list of connected edges (or nodes) using "neighbor" function
+        # and degree for each node
+        # need a detailed series of conditional statements:
+            # if braid and connector in neighbor list:
+                # node_type = "braid-to-connector"
+            # elif only braids in neighbor list:
+                # node_type = "braid-to-braid"
+            # elif only connectors and degree > 2:
+                # node_type = 'tributary confluence"
+            # elif two or more outflows in neighbor list:
+                # node_type = 'outflow'
+            # elif two or more headwaters in neighbor list:
+                # node_type = 'headwater'
+    return
