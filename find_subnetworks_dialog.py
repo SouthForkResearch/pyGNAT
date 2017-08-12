@@ -28,7 +28,7 @@ from PyQt4.QtCore import *
 from qgis.core import *
 from qgis.gui import *
 import qgis.utils
-import network as network
+import network as net
 import symbolizer as symbol
 
 
@@ -59,7 +59,7 @@ class FindSubnetworksDialog(QtGui.QDialog, FORM_CLASS):
         self.btnReset.clicked.connect(self.reset_form)
 
         self.btnExportToTxt.clicked.connect(self.export_to_txt)
-        self.btnDisplayResults.clicked.connect(self.display_results_lyr)
+        #self.btnDisplayResults.clicked.connect(self.display_results_lyr)
         self.btnClose.clicked.connect(self.close)
 
         self.input_shp = ""
@@ -158,18 +158,19 @@ class FindSubnetworksDialog(QtGui.QDialog, FORM_CLASS):
 
             self.display_log_txt("Importing stream network shapefile...")
             QtCore.QCoreApplication.instance().processEvents()
-            DG = network.import_shp(self.input_shp)
+            network_layer = QgsVectorLayer(self.input_shp, 'inNetwork', 'ogr')
+            theNetwork = net.Network(network_layer)
 
             self.display_log_txt("Finding subnetworks...")
-            list_SG = network.get_subgraphs(DG)
+            list_SG = theNetwork.get_subgraphs()
             QtCore.QCoreApplication.instance().processEvents()
 
             self.display_log_txt("Calculating subnetwork IDs...")
-            UG = network.calc_network_id(list_SG)
+            id_G = theNetwork.calc_network_id(list_SG)
             QtCore.QCoreApplication.instance().processEvents()
 
             self.display_log_txt("Writing output shapefiles...")
-            network.export_shp(UG, self.input_shp, self.output_folder)
+            theNetwork._nx_to_shp(id_G, self.output_folder)
             QtCore.QCoreApplication.instance().processEvents()
 
             stop_string = time.ctime()
@@ -180,9 +181,10 @@ class FindSubnetworksDialog(QtGui.QDialog, FORM_CLASS):
             self.display_log_txt("--------------------------\n")
 
             # Display results as text and layers in QGIS TOC
-            list_results = network.get_graph_attributes(UG, "NetworkID")
+            list_results = theNetwork.get_graph_attributes(id_G, "NetworkID")
             for result in list_results:
                 self.display_log_txt(result)
+            self.display_results_lyr()
             # if self.inputCheck():
             #     QtCore.QCoreApplication.instance().processEvents()
         elif self.txtInputNetwork.text() == "":
