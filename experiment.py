@@ -9,21 +9,24 @@ inSmallNetworkShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_SmallNetwork.s
 inBraidsShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_Braids.shp'
 inDisconnectedNetworkShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_Disconnected.shp'
 inFlowDirectionShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_Flow_Direction_small2.shp'
+inDuplicatesShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\In\NHD_Duplicates.shp'
 outShp = r'C:\JL\Testing\pyGNAT\NetworkFeatures\Out\test.shp'
 outDir = r'C:\JL\Testing\pyGNAT\NetworkFeatures\Out'
 
 #network_layer = QgsVectorLayer(inBraidsShp, 'inNetwork', 'ogr')
 #network_layer = QgsVectorLayer(inSmallNetworkShp, 'inNetwork', 'ogr')
 #network_layer = QgsVectorLayer(inDisconnectedNetworkShp, 'inNetwork', 'ogr')
-network_layer = QgsVectorLayer(inFlowDirectionShp, 'inNetwork', 'ogr')
+#network_layer = QgsVectorLayer(inFlowDirectionShp, 'inNetwork', 'ogr')
+network_layer = QgsVectorLayer(inDuplicatesShp, 'inNetwork', 'ogr')
 
 theNetwork = net.Network(network_layer)
 list_SG = theNetwork.get_subgraphs()
 test_G = theNetwork.calc_network_id(list_SG)
 subnet_G = theNetwork.select_by_attribute(test_G, "NetworkID", "net001")
 
-source_node = theNetwork.find_node_with_ID(subnet_G, "_FID_", 2)
-flow_error_G = theNetwork.flow_errors(subnet_G, source_node)
+dupes_G = theNetwork.error_dup(subnet_G)
+# source_node = theNetwork.find_node_with_ID(subnet_G, "_FID_", 2)
+# flow_error_G = theNetwork.error_flow(subnet_G, source_node)
 
 theNetwork.add_attribute(subnet_G, "edge_type", "connector")
 outflow_G = theNetwork.get_outflow_edges(subnet_G, "edge_type", "outflow")

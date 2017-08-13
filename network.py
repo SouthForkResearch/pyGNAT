@@ -11,7 +11,7 @@ import ogr
 from qgis.core import *
 import networkx as nx
 
-# FIXME new class, refactor all functions as class methods
+
 class Network():
 
     def __init__(self, in_network_lyr, msgcallback=None):
@@ -44,6 +44,10 @@ class Network():
         for f in in_network_lyr.getFeatures():
 
             flddata = f.attributes()
+            # change NULL values to None, so that OGR can export graphs to shapefiles at a later time.
+            for n,i in enumerate(flddata):
+                if i==NULL:
+                    flddata[n]=None
             fields = [str(fi.name()) for fi in f.fields()]
 
             geo = f.geometry()
@@ -441,13 +445,12 @@ class Network():
         unique_attrbs = sorted(set(dict.values()))
         return unique_attrbs
 
-    def flow_errors(self, G, src_node, ud=None):
+    def error_flow(self, G, src_node, ud=None):
         """Returns the first edges that do not conform to the flow direction
         implicit in defined source node.
         G: target digraph
         src: source nodes
         ud: undirected graph (faster iteration with setdirection)
-        stopnodes: break points in the network
         """
         RG = nx.reverse(G, copy=True)
         flipped_G = nx.MultiDiGraph()
@@ -473,6 +476,28 @@ class Network():
         nx.reverse(RG)
         upstream_G = nx.compose(RG, flipped_G)
         return upstream_G
+
+    def error_dup(self, G):
+        """Returns parallel edges with identical lengths
+        G: target digraph
+        return: multidigraph with new error_dup attribute field
+        """
+        self.add_attribute(G, 'error_dupe', 0)
+        duplicates_G = nx.MultiDiGraph()
+        for e in G.edges_iter():
+            keys = G.get_edge_data(*e).keys()
+            if len(keys) == 2:
+                length_list = []
+                for k in keys:
+                    data = G.get_edge_data(*e, key=k)
+                    length_list.append((e[0],e[1],k,data))
+                if length_list[0][3]['_calc_len_'] == length_list[1][3]['_calc_len_']:
+                    for i in length_list:
+                        duplicates_G.add_edge(i[0],i[1],i[2],i[3])
+        self.update_attributes(duplicates_G, 'error_dupe', 1)
+        dupes_G = nx.compose()
+        return dupes_G
+
 
 # TODO
 def get_node_types(G, id, attrb_field, attrb_value):
