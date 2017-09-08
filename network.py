@@ -125,58 +125,71 @@ class Network():
             lyr.CreateFeature(feature)
             feature.Destroy()
 
+        def build_attrb_dict(lyr, data, fields):
+            attributes = {}
+            # Loop through attribute data in edges
+            for key, data in data.items():
+                # Reject spatial data not required for attribute table
+                if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
+                    and key != 'ShpName'):
+                    # For all edges check/add field and data type to fields dict
+                    if key not in fields:
+                        # Field not in previous edges so add to dict
+                        if type(data) in OGRTypes:
+                            fields[key] = OGRTypes[type(data)]
+                        else:
+                            # Data type not supported, default to string (char 80)
+                            fields[key] = ogr.OFTString
+                        newfield = ogr.FieldDefn(key, fields[key])
+                        lyr.CreateField(newfield)
+                        # Store the data from new field to dict for CreateLayer()
+                        attributes[key] = data
+                    else:
+                        # Field already exists, add data to dict for CreateLayer()
+                        attributes[key] = data
+            return attributes
+
+
         node_name = "network_nodes"
         edge_name = "network_lines"
         drv = ogr.GetDriverByName("ESRI Shapefile")
         shpdir = drv.CreateDataSource("{0}".format(out_dir))
+
+        # Conversion dict between python and ogr types
+        OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+
+        # Write nodes
         try:
             shpdir.DeleteLayer(node_name)
         except:
             pass
         nodes = shpdir.CreateLayer(node_name, srs, ogr.wkbPoint)
+        # New edge attribute write support merged into edge loop
+        n_fields = {}  # storage for field names and their data types
 
+        # Node loop
         for n in G:
             data = G.node[n]
             g = netgeometry(n, data)
-            create_feature(g, nodes)
-            try:
-                shpdir.DeleteLayer(edge_name)
-            except:
-                pass
+            n_attributes = build_attrb_dict(nodes, data, n_fields)
+            create_feature(g, nodes, n_attributes)
+
+        # Write edges
+        try:
+            shpdir.DeleteLayer(edge_name)
+        except:
+            pass
+
         edges = shpdir.CreateLayer(edge_name, srs, ogr.wkbLineString)
-
         # New edge attribute write support merged into edge loop
-        fields = {}  # storage for field names and their data types
-        attributes = {}  # storage for attribute data (indexed by field names)
-
-        # Conversion dict between python and ogr types
-        OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+        e_fields = {}  # storage for field names and their data types
 
         # Edge loop
         for u,v,k,data in G.edges_iter(data=True,keys=True):
             g = netgeometry(k, data)
-            # Loop through attribute data in edges
-            for f_key, f_data in data.items():
-                # Reject spatial data not required for attribute table
-                if (f_key != 'Json' and f_key != 'Wkt' and f_key != 'Wkb'
-                and f_key != 'ShpName'):
-                    # For all edges check/add field and data type to fields dict
-                    if f_key not in fields:
-                        # Field not in previous edges so add to dict
-                        if type(f_data) in OGRTypes:
-                            fields[f_key] = OGRTypes[type(f_data)]
-                        else:
-                            # Data type not supported, default to string (char 80)
-                            fields[f_key] = ogr.OFTString
-                        newfield = ogr.FieldDefn(f_key, fields[f_key])
-                        edges.CreateField(newfield)
-                        # Store the data from new field to dict for CreateLayer()
-                        attributes[f_key] = f_data
-                    else:
-                        # Field already exists, add data to dict for CreateLayer()
-                        attributes[f_key] = f_data
+            e_attributes = build_attrb_dict(edges, data, e_fields)
             # Create the feature with geometry, passing new attribute data
-            create_feature(g, edges, attributes)
+            create_feature(g, edges, e_attributes)
         nodes, edges = None, None
         return
 
@@ -478,10 +491,10 @@ class Network():
         return upstream_G
 
     def error_dup(self, G):
-        """Returns parallel edges with identical lengths
+        '''Returns parallel edges with identical lengths
         G: target digraph
         return: multidigraph with new error_dup attribute field
-        """
+        '''
         self.add_attribute(G, 'error_dupe', 0)
         duplicates_G = nx.MultiDiGraph()
         for e in G.edges_iter():
@@ -498,30 +511,45 @@ class Network():
         dupes_G = nx.compose()
         return dupes_G
 
-
-# TODO
-def get_node_types(G, id, attrb_field, attrb_value):
-    ### pseudo-code ###
-    # reverse direction of network
-    reverse_G = G.reverse(copy=True)
-    # start at outflow node
-    outflow_node = findnodewithID(reverse_G, id)
-    # add NODE_TYPE = 'outflow'
-    add_attribute(reverse_G, "NodeType", "outflow")
-    # iterate through nodes up network
-
-    # for each node:
-        # get list of connected edges (or nodes) using "neighbor" function
-        # and degree for each node
-        # need a detailed series of conditional statements:
-            # if braid and connector in neighbor list:
-                # node_type = "braid-to-connector"
-            # elif only braids in neighbor list:
-                # node_type = "braid-to-braid"
-            # elif only connectors and degree > 2:
-                # node_type = 'tributary confluence"
-            # elif two or more outflows in neighbor list:
-                # node_type = 'outflow'
-            # elif two or more headwaters in neighbor list:
-                # node_type = 'headwater'
-    return
+    def get_node_types(self):
+        '''Calculates node types for a graph which already has edge types
+        G: target multidigraph with edge types as an attribute
+        return:
+        '''
+        node_dict = {}
+        type_list = []
+        edge_dict = nx.get_edge_attributes(self.edge_typed_G, 'edge_type')
+        node_list = [n for n in self.edge_typed_G.nodes_iter()]
+        # build dictionary of node with predecessors and successors nodes
+        for node in node_list:
+            node_pred = self.edge_typed_G.predecessors(node)
+            node_succ = self.edge_typed_G.successors(node)
+            node_dict[node] = [node_pred, node_succ]
+        # build list of nodes with associated edge_types. Can be duplicate node items in list.
+        for nk, nv in node_dict.items():
+            for ek, ev in edge_dict.items():
+                if nk in ek:
+                    type_list.append([nk, ev])
+        # assign a node type code for each node
+        for nd in self.edge_typed_G.nodes_iter():
+            type_subset = [n[1] for n in type_list if nd == n[0]]
+            if 'braid' in type_subset and 'headwater' in type_subset:
+                t = 'CB'
+            elif 'braid' in type_subset and 'connector' in type_subset:
+                t = 'CB'
+            elif 'braid' in type_subset and 'outflow' in type_subset:
+                t = 'CB'
+            elif all(ts == 'braid' for ts in type_subset):
+                t = 'BB'
+            elif len(type_subset) == 2 and 'connector' in type_subset:
+                t = 'CC'
+            elif all(ts == 'connector' for ts in type_subset):
+                t = 'TC'
+            elif len(type_subset) == 1 and 'headwater' in type_subset:
+                t = 'H'
+            elif len(type_subset) == 1 and 'outflow' in type_subset:
+                t = 'O'
+            else:
+                t = None
+            self.edge_typed_G.node[nd]['node_type'] = t
+        return
