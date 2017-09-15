@@ -553,3 +553,17 @@ class Network():
                 t = None
             self.edge_typed_G.node[nd]['node_type'] = t
         return
+
+    def calculate_river_km(self):
+        '''Calculates distance of each edge from outflow node, in kilometers.'''
+        outflow_G = self.select_by_attribute(self.edge_typed_G, "edge_type", "outflow")
+        outflow_node = next(v for u, v, key, data in outflow_G.edges_iter(keys=True, data=True))
+        self.add_attribute(self.edge_typed_G, "river_km", "-9999")
+        for u, v, key, data in self.edge_typed_G.edges_iter(keys=True, data=True):
+            path_len = nx.shortest_path_length(self.edge_typed_G,
+                                               source=u,
+                                               target=outflow_node,
+                                               weight='_calc_len_')
+            river_km = path_len / 1000
+            data['river_km'] = river_km
+        return

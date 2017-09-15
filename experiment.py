@@ -75,6 +75,19 @@ for nd in edge_typed_G.nodes_iter():
         t = ''
     edge_typed_G.node[nd]['node_type'] = t
 
+
+# calculate river kilometers
+outflow_G = theNetwork.select_by_attribute(edge_typed_G, "edge_type", "outflow")
+outflow_node = next(v for u, v, key, data in outflow_G.edges_iter(keys=True, data=True))
+theNetwork.add_attribute(edge_typed_G, 'river_km', -9999)
+for u,v,key,data in edge_typed_G.edges_iter(keys=True, data=True):
+    path_len = nx.shortest_path_length(edge_typed_G,
+                                       source=u,
+                                       target=outflow_node,
+                                       weight='_calc_len_')
+    river_km = path_len/1000
+    data['river_km'] = river_km
+
 theNetwork._nx_to_shp(edge_typed_G, outDir)
 
 
