@@ -326,9 +326,9 @@ class Network():
                 nx.set_edge_attributes(G, attrb_name, attrb_value)
             else:
                 print "ERROR: Attribute type does not exist in the network"
+
         except:
             print "ERROR: Missing an input parameter"
-        return
 
     def get_outflow_edges(self, G, attrb_field, attrb_name):
         """
@@ -440,10 +440,10 @@ class Network():
         if braid_complex_G is not None:
             G3 = nx.compose(G2, braid_complex_G)
         if braid_simple_G is not None:
-            self.edge_typed_G = nx.compose(G3, braid_simple_G)
+            self.gnat_G = nx.compose(G3, braid_simple_G)
         if braid_complex_G is None or braid_simple_G is None:
-            self.edge_typed_G = G2
-        return self.edge_typed_G
+            self.gnat_G = G2
+        return self.gnat_G
 
     def find_node_with_ID(self, G, id_field, id_value):
         """
@@ -511,19 +511,19 @@ class Network():
         dupes_G = nx.compose()
         return dupes_G
 
-    def get_node_types(self):
+    def set_node_types(self):
         '''Calculates node types for a graph which already has edge types
         G: target multidigraph with edge types as an attribute
         return:
         '''
         node_dict = {}
         type_list = []
-        edge_dict = nx.get_edge_attributes(self.edge_typed_G, 'edge_type')
-        node_list = [n for n in self.edge_typed_G.nodes_iter()]
+        edge_dict = nx.get_edge_attributes(self.gnat_G, 'edge_type')
+        node_list = [n for n in self.gnat_G.nodes_iter()]
         # build dictionary of node with predecessors and successors nodes
         for node in node_list:
-            node_pred = self.edge_typed_G.predecessors(node)
-            node_succ = self.edge_typed_G.successors(node)
+            node_pred = self.gnat_G.predecessors(node)
+            node_succ = self.gnat_G.successors(node)
             node_dict[node] = [node_pred, node_succ]
         # build list of nodes with associated edge_types. Can be duplicate node items in list.
         for nk, nv in node_dict.items():
@@ -531,7 +531,7 @@ class Network():
                 if nk in ek:
                     type_list.append([nk, ev])
         # assign a node type code for each node
-        for nd in self.edge_typed_G.nodes_iter():
+        for nd in self.gnat_G.nodes_iter():
             type_subset = [n[1] for n in type_list if nd == n[0]]
             if 'braid' in type_subset and 'headwater' in type_subset:
                 t = 'CB'
@@ -543,6 +543,8 @@ class Network():
                 t = 'BB'
             elif len(type_subset) == 2 and 'connector' in type_subset:
                 t = 'CC'
+            elif 'connector' in type_subset and 'headwater' in type_subset:
+                t = 'TC'
             elif all(ts == 'connector' for ts in type_subset):
                 t = 'TC'
             elif len(type_subset) == 1 and 'headwater' in type_subset:
@@ -551,19 +553,62 @@ class Network():
                 t = 'O'
             else:
                 t = None
-            self.edge_typed_G.node[nd]['node_type'] = t
+            self.gnat_G.node[nd]['node_type'] = t
         return
 
     def calculate_river_km(self):
         '''Calculates distance of each edge from outflow node, in kilometers.'''
-        outflow_G = self.select_by_attribute(self.edge_typed_G, "edge_type", "outflow")
+        outflow_G = self.select_by_attribute(self.gnat_G, "edge_type", "outflow")
         outflow_node = next(v for u, v, key, data in outflow_G.edges_iter(keys=True, data=True))
-        self.add_attribute(self.edge_typed_G, "river_km", "-9999")
-        for u, v, key, data in self.edge_typed_G.edges_iter(keys=True, data=True):
-            path_len = nx.shortest_path_length(self.edge_typed_G,
+        self.add_attribute(self.gnat_G, "river_km", "-9999")
+        for u, v, key, data in self.gnat_G.edges_iter(keys=True, data=True):
+            path_len = nx.shortest_path_length(self.gnat_G,
                                                source=u,
                                                target=outflow_node,
                                                weight='_calc_len_')
             river_km = path_len / 1000
             data['river_km'] = river_km
+        return
+
+    def streamorder(self):
+        '''Calculates strahler stream order for all edges within a stream network graph.
+        The input graph must already have an attribute field with edge types.'''
+
+        try:
+            self.add_attribute(self.gnat_G, 'stream_order', -9999)
+        except:
+            self.update_attribute(self.gnat_G, 'stream_order', -9999)
+        order_idx = 1
+
+        # Set up initial set of reaches where headwaters = stream order 1
+        headwater_G = self.get_headwater_edges(self.gnat_G, "edge_type", "headwater")
+        for u,v,k,d in self.gnat_G.edges_iter(data=True, keys=True):
+            if headwater_G.has_edge(u, v, key=k):
+                self.gnat_G.add_edge(u, v, key=k, stream_order=order_idx)
+
+        self.streamorder_iter(order_idx)
+
+        return
+
+    def streamorder_iter(self, order_idx):
+        '''Recursively iterates to calculate stream order.'''
+
+        # Check if edge_type != 'outflow', and if not, then execute method
+        next_sel_G = self.select_by_attribute(self.gnat_G, "stream_order", order_idx)
+        if next_sel_G.number_of_edges() == 1 and self.find_node_with_ID(next_sel_G, 'edge_type', 'outflow'):
+            print "Stream order process completed!"
+            return
+        else:
+            prev_sel_G = self.select_by_attribute(self.gnat_G, "stream_order", order_idx)
+            for u, v, k, d in self.gnat_G.edges_iter(data=True, keys=True):
+                if prev_sel_G.has_edge(u, v, key=k):
+                    out_edges = self.gnat_G.out_edges(v, data=True, keys=True)
+                    for e in out_edges:
+                        if self.gnat_G.node[e[1]]['node_type'] == 'TC':
+                            self.gnat_G.edge[e[0]][e[1]][e[2]]['stream_order'] = order_idx + 1
+                        else:
+                            self.gnat_G.edge[e[0]][e[1]][e[2]]['stream_order'] = order_idx
+            order_idx += 1
+            # recursion
+            self.streamorder_iter(order_idx)
         return
